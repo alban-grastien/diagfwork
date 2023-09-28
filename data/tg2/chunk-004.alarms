@@ -1,0 +1,14 @@
+// from 2009-07-02 02:44:55 to 2009-07-02 02:52:54: 3 observations (3 alarms)
+
+// at 2009-07-02 02:44:55
+time = 0.0
+Bus_X3.limit_KV_High_3
+time = 1.0
+
+// at 2009-07-02 02:45:03
+time = 8.0
+Breaker_X1_X2.cb_state_open
+
+// at 2009-07-02 02:45:04
+time = 9.0
+Bus_X3.limit_KV_Normal

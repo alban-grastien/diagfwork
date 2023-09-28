@@ -1,0 +1,157 @@
+package lang;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+public abstract class YAMLDGenericVar
+{
+	private String name;
+	private int range_init, range_end;
+	private ArrayList<YAMLDValue> domainElems = new ArrayList<YAMLDValue>();
+	private Map<String,YAMLDValue> _valueMap = new HashMap<String, YAMLDValue>();
+	private final YAMLDComponent _comp;
+	private ValType _valType;
+	
+	public enum ValType {
+		UNKNOWN,
+		RANGE,
+		LIST
+	};
+	
+	public YAMLDGenericVar(String newName, YAMLDComponent comp)
+	{
+		name = newName;
+		_comp = comp;
+		_valType = ValType.UNKNOWN;
+	}
+	
+	public String name()
+	{
+		return name;
+	}
+	
+	public ArrayList<YAMLDValue> domain()
+	{
+		return domainElems;
+	}
+	
+	public void domainPush(String new_dom_elem)
+	{
+		if (_valType == ValType.RANGE) {
+			throw new IllegalStateException("Cannot have int and string values.");
+		}
+		_valType = ValType.LIST;
+		final YAMLDValue val = YAMLDValue.getValue(new_dom_elem);
+		domainElems.add(val);
+		_valueMap.put(new_dom_elem, val);
+	}
+
+	// All possible values are stored in the domain to simplify the interface.  
+	public void setRange(int begin, int end)
+	{
+		if (_valType != ValType.UNKNOWN) {
+			throw new IllegalStateException("Impossible to define a range.");
+		}
+		_valType = ValType.RANGE;
+		
+		for (int i=begin ; i<=end ; i++) {
+			final YAMLDValue val = YAMLDValue.getValue(i);
+			domainElems.add(val);
+		}
+		
+		range_init = begin;
+		range_end = end;
+	}
+
+	public int getRangeInit()
+	{
+		return range_init;
+	}
+
+	public int getRangeEnd()
+	{
+		return range_end;
+	}
+
+	/**
+	 * @return true if the variable is defined via a range, 
+	 * i.e., [x..y] as opposed to { a, b, c, d }, false
+	 * otherwise.  Note that a domainSize() function is not
+	 * sufficient as we could have a defined variable with
+	 * an empty domain (not that it would be useful for
+	 * much).
+	 */
+	boolean hasRange()
+	{
+		return _valType == ValType.RANGE;
+	}
+	
+	/**
+	 * Indicates which component this variable is affected to.  
+	 * 
+	 * @return the component that contains this vhariable.  
+	 * */
+	public YAMLDComponent getComponent() {
+		return _comp;
+	}
+	
+	/**
+	 * Returns the value of specified integer.  
+	 * 
+	 * @param i the integer of the value.  
+	 * @return the value associated with <code>i</code>, 
+	 * <code>null</code> if out of range or if this variable is 
+	 * not defined by a range.  
+	 * */
+	public YAMLDValue getValue(int i) {
+		if (!hasRange()) {
+			return null;
+		}
+		if (i < getRangeInit()) {
+			return null;
+		}
+		if (i > getRangeEnd()) {
+			return null;
+		}
+		return YAMLDValue.getValue(i);
+	}
+	
+	/**
+	 * Returns the value of specified name. 
+	 * 
+	 * @param n the name of the variable.
+	 * @return the value with name <code>n</code> if existing, 
+	 * <code>null</code> otherwise.  
+	 * */
+	public YAMLDValue getValue(String n) {
+		if (hasRange()) {
+			throw new IllegalArgumentException("Cannot read the value '" + n + "'" 
+					+ "for variable '" + name() + "':"
+					+ " domain is a range.");
+		}
+		final YAMLDValue result =_valueMap.get(n); 
+		return result; 
+	}
+	
+	/**
+	 * Returns a formatted string representation of this variable.  
+	 * The formatted representation is <code>comp_name.var_name</code>.  
+	 * 
+	 * @return a string that represents this variable.  
+	 * */
+	public String toFormattedString() {
+		return _comp.name() + "." + name();
+	}
+	
+	public String toString() {
+		return toFormattedString();
+	}
+	
+	@Override
+	public int hashCode() {
+		final int P1 = 35317;
+		final int P2 = 331999;
+		return P1*name.hashCode() + P2*_comp.hashCode();
+	}
+	
+}

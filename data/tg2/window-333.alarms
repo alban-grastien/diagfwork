@@ -1,0 +1,144 @@
+// from 2009-07-02 10:47:20 to + 1 minute: 71 observations (71 alarms)
+
+// at 2009-07-02 10:47:20
+time = 0.0
+Line_X67_X68.limit_MVAR_Low_4
+time = 1.0
+
+// at 2009-07-02 10:47:27
+time = 7.0
+Generator_X63.unit_status_OFF
+Breaker_X3_X4.cb_state_open
+Breaker_X11_X12.cb_state_open
+Breaker_X17_X18.cb_state_open
+Breaker_X31_X32.cb_state_open
+
+// at 2009-07-02 10:47:28
+time = 8.0
+Breaker_X37_X38.cb_state_open
+Breaker_X33_X34.cb_state_open
+Breaker_X35_X36.cb_state_open
+Bus_X59.limit_KV_Low_5
+Bus_X80.limit_KV_Low_5
+Breaker_X47_X48.cb_state_open
+Breaker_X49_X50.cb_state_open
+Bus_X83.limit_KV_Low_3
+Breaker_X9_X10.cb_state_open
+Breaker_X15_X16.cb_state_open
+Breaker_X1_X2.cb_state_open
+Breaker_X29_X30.cb_state_open
+Bus_X30.entered_zero_zone_MW
+Generator_X60.runback_alarm
+Generator_X61.runback_alarm
+Generator_X62.runback_alarm
+Generator_X62.unit_status_OFF
+
+// at 2009-07-02 10:47:29
+time = 9.0
+Bus_X59.limit_KV_Normal
+Bus_X80.limit_KV_Normal
+Breaker_X21_X22.cb_state_open
+Breaker_X23_X24.cb_state_open
+Disconnector_X59_X19.sw_state_open
+Breaker_X19_X20.cb_state_not_responding
+Breaker_X43_X44.cb_state_open
+Breaker_X45_X46.cb_state_open
+Bus_X86.limit_KV_Low_3
+Bus_X79.limit_MW_Low_2
+Generator_X61.unit_status_OFF
+
+// at 2009-07-02 10:47:30
+time = 10.0
+Breaker_X5_X6.cb_state_open
+Breaker_X7_X8.cb_state_open
+Breaker_X13_X14.cb_state_open
+Breaker_X27_X28.cb_state_open
+Generator_X64.runback_alarm
+Bus_X83.limit_KV_Normal
+Line_X71_X72.entered_zero_zone_KV
+
+// at 2009-07-02 10:47:31
+time = 11.0
+Generator_X64.runback_reset
+Bus_X86.limit_KV_Normal
+
+// at 2009-07-02 10:47:32
+time = 12.0
+Line_X65_X66.limit_MW_Low_2
+
+// at 2009-07-02 10:47:33
+time = 13.0
+Line_X67_X68.limit_MVAR_High_4
+
+// at 2009-07-02 10:47:34
+time = 14.0
+Bus_X84.limit_MVAR_Normal
+
+// at 2009-07-02 10:47:35
+time = 15.0
+Breaker_X25_X26.cb_state_open
+Generator_X60.unit_status_OFF
+Breaker_X39_X40.cb_state_open
+
+// at 2009-07-02 10:47:36
+time = 16.0
+Generator_X64.unit_status_OFF
+Line_X65_X66.limit_MW_Low_3
+Bus_X80.limit_KV_High_3
+Bus_X85.limit_KV_High_3
+Bus_X81.limit_KV_High_3
+Bus_X82.limit_KV_High_3
+Bus_X40.entered_zero_zone_MW
+
+// at 2009-07-02 10:47:37
+time = 17.0
+Bus_X80.limit_KV_Normal
+Bus_X81.limit_KV_Normal
+
+// at 2009-07-02 10:47:38
+time = 18.0
+Bus_X82.limit_KV_Normal
+time = 19.0
+
+// at 2009-07-02 10:47:41
+time = 21.0
+Breaker_X41_X42.cb_state_closed
+Line_X67_X68.entered_zero_zone_MVAR
+time = 22.0
+
+// at 2009-07-02 10:47:43
+time = 23.0
+Breaker_X49_X50.cb_state_closed
+Breaker_X49_X50.cb_state_open
+
+// at 2009-07-02 10:47:44
+time = 24.0
+Line_X69_X70.limit_MW_Low_2
+Breaker_X5_X6.cb_state_closed
+
+// at 2009-07-02 10:47:45
+time = 25.0
+Line_X65_X66.limit_MW_Low_4
+time = 26.0
+
+// at 2009-07-02 10:47:53
+time = 33.0
+Bus_X85.limit_KV_Normal
+time = 34.0
+
+// at 2009-07-02 10:48:10
+time = 50.0
+Generator_X61.runback_reset
+
+// at 2009-07-02 10:48:11
+time = 51.0
+Generator_X60.runback_reset
+
+// at 2009-07-02 10:48:12
+time = 52.0
+Generator_X62.runback_reset
+time = 53.0
+
+// at 2009-07-02 10:48:19
+time = 59.0
+Line_X69_X70.limit_MW_Normal

@@ -1,0 +1,642 @@
+component Breaker_X1_X2 = {
+  var auto_reopen_wait : [0..1];
+  var auto_reclose_wait : [0..1];
+  var commanded_ar_non_auto : [0..1];
+  var commanded_ar_auto : [0..1];
+  var commanded_closed : [0..1];
+  var commanded_open : [0..1];
+  var lockout : [0..1];
+  var ar_status : {auto,non_auto};
+  var state : {open,closed};
+  event state_change_close;
+  event state_change_open;
+  event breaker_is_closed;
+  event count_as_fault;
+  event check_isolator_open;
+  event close;
+  event simple_trip;
+  event trip;
+  event open;
+  event IMPOSSIBLE;
+  event command_cb_ar_status_NON_AUTO;
+  event command_cb_ar_status_AUTO;
+  event command_ar_supy_control_status_NON_AUTO;
+  event command_ar_supy_control_status_AUTO;
+  event command_cb_state_closed;
+  event command_cb_state_open;
+  event cb_ar_status_NON_AUTO;
+  event cb_ar_status_AUTO;
+  event ar_supy_control_status_NON_AUTO;
+  event ar_supy_control_status_AUTO;
+  event cb_command_fail;
+  event cb_state_not_responding;
+  event cb_state_abnormal;
+  event cb_state_closed;
+  event cb_state_open;
+  transition breaker_is_closed_transition
+    breaker_is_closed_transition_0 state = closed -> breaker_is_closed;
+  transition check_isolator_open_transition
+    check_isolator_open_transition_0 true = 1 -> IMPOSSIBLE;
+    check_isolator_open_transition_1 state = open -> state := open;
+  triggeredby check_isolator_open;
+  transition auto_reopen_wait_timeout
+    auto_reopen_wait_timeout_0 true = 1 -> auto_reopen_wait := false;
+  triggeredby [0.0..1.0] auto_reopen_wait = true;
+  transition auto_reclose_wait_timeout
+    auto_reclose_wait_timeout_0 true = 1 -> auto_reclose_wait := false;
+  triggeredby [0.0..45.0] auto_reclose_wait = true;
+  transition commanded_ar_non_auto_timeout
+    commanded_ar_non_auto_timeout_0 true = 1 -> commanded_ar_non_auto := false;
+  triggeredby [0.0..45.0] commanded_ar_non_auto = true;
+  transition commanded_ar_auto_timeout
+    commanded_ar_auto_timeout_0 true = 1 -> commanded_ar_auto := false;
+  triggeredby [0.0..45.0] commanded_ar_auto = true;
+  transition commanded_closed_timeout
+    commanded_closed_timeout_0 true = 1 -> commanded_closed := false;
+  triggeredby [0.0..45.0] commanded_closed = true;
+  transition commanded_open_timeout
+    commanded_open_timeout_0 true = 1 -> commanded_open := false;
+  triggeredby [0.0..45.0] commanded_open = true;
+  transition not_responding
+    not_responding_0 true = 1 -> cb_state_not_responding, count_as_fault;
+  transition abnormal
+    abnormal_0 true = 1 -> cb_state_abnormal, count_as_fault;
+  transition ar_status_non_auto_unexplained
+    ar_status_non_auto_unexplained_0 true = 1 -> ar_status := non_auto, cb_ar_status_NON_AUTO, count_as_fault;
+    ar_status_non_auto_unexplained_1 true = 1 -> ar_status := non_auto, ar_supy_control_status_NON_AUTO, count_as_fault;
+  transition ar_status_auto_unexplained
+    ar_status_auto_unexplained_0 true = 1 -> ar_status := auto, cb_ar_status_AUTO, count_as_fault;
+    ar_status_auto_unexplained_1 true = 1 -> ar_status := auto, ar_supy_control_status_AUTO, count_as_fault;
+  transition ar_status_non_auto
+    ar_status_non_auto_0 commanded_ar_non_auto = true -> ar_status := non_auto, cb_ar_status_NON_AUTO;
+    ar_status_non_auto_1 commanded_ar_non_auto = true -> ar_status := non_auto, ar_supy_control_status_NON_AUTO;
+  transition ar_status_auto
+    ar_status_auto_0 commanded_ar_auto = true -> ar_status := auto, cb_ar_status_AUTO;
+    ar_status_auto_1 commanded_ar_auto = true -> ar_status := auto, ar_supy_control_status_AUTO;
+  transition command_ar_non_auto
+    command_ar_non_auto_0 true = 1 -> commanded_ar_non_auto := true, command_cb_ar_status_NON_AUTO;
+    command_ar_non_auto_1 true = 1 -> commanded_ar_non_auto := true, command_ar_supy_control_status_NON_AUTO;
+  transition command_ar_auto
+    command_ar_auto_0 true = 1 -> commanded_ar_auto := true, command_cb_ar_status_AUTO;
+    command_ar_auto_1 true = 1 -> commanded_ar_auto := true, command_ar_supy_control_status_AUTO;
+  transition command_close_fail
+    command_close_fail_0 commanded_closed = true -> cb_command_fail;
+  transition close_on_command
+    close_on_command_0 (state = open AND commanded_closed = true) -> state := closed, cb_state_closed, state_change_close;
+  transition command_close
+    command_close_0 true = 1 -> commanded_closed := true, command_cb_state_closed;
+  transition command_open_fail
+    command_open_fail_0 commanded_open = true -> cb_command_fail;
+  transition open_on_command
+    open_on_command_0 (state = closed AND commanded_open = true) -> state := open, cb_state_open, state_change_open;
+  transition command_open
+    command_open_0 true = 1 -> commanded_open := true, command_cb_state_open;
+  transition reopen
+    reopen_0 (state = closed AND auto_reopen_wait = true) -> state := open, auto_reopen_wait := false, lockout := true, cb_state_open, state_change_open;
+  transition reclose
+    reclose_0 ((state = open AND auto_reclose_wait = true) AND lockout = false) -> state := closed, auto_reclose_wait := false, auto_reopen_wait := true, cb_state_closed, state_change_close;
+  transition close_unexplained
+    close_unexplained_0 state = open -> state := closed, cb_state_closed, state_change_close, count_as_fault;
+  transition close1
+    close1_0 state = open -> state := closed, cb_state_closed, state_change_close;
+  triggeredby close;
+  transition trip_unexplained
+    trip_unexplained_0 (state = closed AND ar_status = auto) -> state := open, auto_reclose_wait := true, cb_state_open, state_change_open, count_as_fault;
+  transition simple_trip1
+    simple_trip1_0 state = open -> state := open;
+    simple_trip1_1 (state = closed AND ar_status = non_auto) -> state := open, cb_state_open;
+    simple_trip1_2 (state = closed AND ar_status = auto) -> state := open, auto_reclose_wait := true, cb_state_open;
+  triggeredby simple_trip;
+  transition trip1
+    trip1_0 (state = closed AND ar_status = non_auto) -> state := open, cb_state_open, state_change_open;
+    trip1_1 (state = closed AND ar_status = auto) -> state := open, auto_reclose_wait := true, cb_state_open, state_change_open;
+  triggeredby trip;
+  transition open_unexplained
+    open_unexplained_0 state = closed -> state := open, cb_state_open, state_change_open, count_as_fault;
+  transition open1
+    open1_0 state = closed -> state := open, cb_state_open, state_change_open;
+  triggeredby open;
+}
+component Breaker_X3_X4 = {
+  var auto_reopen_wait : [0..1];
+  var auto_reclose_wait : [0..1];
+  var commanded_ar_non_auto : [0..1];
+  var commanded_ar_auto : [0..1];
+  var commanded_closed : [0..1];
+  var commanded_open : [0..1];
+  var lockout : [0..1];
+  var ar_status : {auto,non_auto};
+  var state : {open,closed};
+  event state_change_close;
+  event state_change_open;
+  event breaker_is_closed;
+  event count_as_fault;
+  event check_isolator_open;
+  event close;
+  event simple_trip;
+  event trip;
+  event open;
+  event IMPOSSIBLE;
+  event command_cb_ar_status_NON_AUTO;
+  event command_cb_ar_status_AUTO;
+  event command_ar_supy_control_status_NON_AUTO;
+  event command_ar_supy_control_status_AUTO;
+  event command_cb_state_closed;
+  event command_cb_state_open;
+  event cb_ar_status_NON_AUTO;
+  event cb_ar_status_AUTO;
+  event ar_supy_control_status_NON_AUTO;
+  event ar_supy_control_status_AUTO;
+  event cb_command_fail;
+  event cb_state_not_responding;
+  event cb_state_abnormal;
+  event cb_state_closed;
+  event cb_state_open;
+  transition breaker_is_closed_transition
+    breaker_is_closed_transition_0 state = closed -> breaker_is_closed;
+  transition check_isolator_open_transition
+    check_isolator_open_transition_0 true = 1 -> IMPOSSIBLE;
+    check_isolator_open_transition_1 state = open -> state := open;
+  triggeredby check_isolator_open;
+  transition auto_reopen_wait_timeout
+    auto_reopen_wait_timeout_0 true = 1 -> auto_reopen_wait := false;
+  triggeredby [0.0..1.0] auto_reopen_wait = true;
+  transition auto_reclose_wait_timeout
+    auto_reclose_wait_timeout_0 true = 1 -> auto_reclose_wait := false;
+  triggeredby [0.0..45.0] auto_reclose_wait = true;
+  transition commanded_ar_non_auto_timeout
+    commanded_ar_non_auto_timeout_0 true = 1 -> commanded_ar_non_auto := false;
+  triggeredby [0.0..45.0] commanded_ar_non_auto = true;
+  transition commanded_ar_auto_timeout
+    commanded_ar_auto_timeout_0 true = 1 -> commanded_ar_auto := false;
+  triggeredby [0.0..45.0] commanded_ar_auto = true;
+  transition commanded_closed_timeout
+    commanded_closed_timeout_0 true = 1 -> commanded_closed := false;
+  triggeredby [0.0..45.0] commanded_closed = true;
+  transition commanded_open_timeout
+    commanded_open_timeout_0 true = 1 -> commanded_open := false;
+  triggeredby [0.0..45.0] commanded_open = true;
+  transition not_responding
+    not_responding_0 true = 1 -> cb_state_not_responding, count_as_fault;
+  transition abnormal
+    abnormal_0 true = 1 -> cb_state_abnormal, count_as_fault;
+  transition ar_status_non_auto_unexplained
+    ar_status_non_auto_unexplained_0 true = 1 -> ar_status := non_auto, cb_ar_status_NON_AUTO, count_as_fault;
+    ar_status_non_auto_unexplained_1 true = 1 -> ar_status := non_auto, ar_supy_control_status_NON_AUTO, count_as_fault;
+  transition ar_status_auto_unexplained
+    ar_status_auto_unexplained_0 true = 1 -> ar_status := auto, cb_ar_status_AUTO, count_as_fault;
+    ar_status_auto_unexplained_1 true = 1 -> ar_status := auto, ar_supy_control_status_AUTO, count_as_fault;
+  transition ar_status_non_auto
+    ar_status_non_auto_0 commanded_ar_non_auto = true -> ar_status := non_auto, cb_ar_status_NON_AUTO;
+    ar_status_non_auto_1 commanded_ar_non_auto = true -> ar_status := non_auto, ar_supy_control_status_NON_AUTO;
+  transition ar_status_auto
+    ar_status_auto_0 commanded_ar_auto = true -> ar_status := auto, cb_ar_status_AUTO;
+    ar_status_auto_1 commanded_ar_auto = true -> ar_status := auto, ar_supy_control_status_AUTO;
+  transition command_ar_non_auto
+    command_ar_non_auto_0 true = 1 -> commanded_ar_non_auto := true, command_cb_ar_status_NON_AUTO;
+    command_ar_non_auto_1 true = 1 -> commanded_ar_non_auto := true, command_ar_supy_control_status_NON_AUTO;
+  transition command_ar_auto
+    command_ar_auto_0 true = 1 -> commanded_ar_auto := true, command_cb_ar_status_AUTO;
+    command_ar_auto_1 true = 1 -> commanded_ar_auto := true, command_ar_supy_control_status_AUTO;
+  transition command_close_fail
+    command_close_fail_0 commanded_closed = true -> cb_command_fail;
+  transition close_on_command
+    close_on_command_0 (state = open AND commanded_closed = true) -> state := closed, cb_state_closed, state_change_close;
+  transition command_close
+    command_close_0 true = 1 -> commanded_closed := true, command_cb_state_closed;
+  transition command_open_fail
+    command_open_fail_0 commanded_open = true -> cb_command_fail;
+  transition open_on_command
+    open_on_command_0 (state = closed AND commanded_open = true) -> state := open, cb_state_open, state_change_open;
+  transition command_open
+    command_open_0 true = 1 -> commanded_open := true, command_cb_state_open;
+  transition reopen
+    reopen_0 (state = closed AND auto_reopen_wait = true) -> state := open, auto_reopen_wait := false, lockout := true, cb_state_open, state_change_open;
+  transition reclose
+    reclose_0 ((state = open AND auto_reclose_wait = true) AND lockout = false) -> state := closed, auto_reclose_wait := false, auto_reopen_wait := true, cb_state_closed, state_change_close;
+  transition close_unexplained
+    close_unexplained_0 state = open -> state := closed, cb_state_closed, state_change_close, count_as_fault;
+  transition close1
+    close1_0 state = open -> state := closed, cb_state_closed, state_change_close;
+  triggeredby close;
+  transition trip_unexplained
+    trip_unexplained_0 (state = closed AND ar_status = auto) -> state := open, auto_reclose_wait := true, cb_state_open, state_change_open, count_as_fault;
+  transition simple_trip1
+    simple_trip1_0 state = open -> state := open;
+    simple_trip1_1 (state = closed AND ar_status = non_auto) -> state := open, cb_state_open;
+    simple_trip1_2 (state = closed AND ar_status = auto) -> state := open, auto_reclose_wait := true, cb_state_open;
+  triggeredby simple_trip;
+  transition trip1
+    trip1_0 (state = closed AND ar_status = non_auto) -> state := open, cb_state_open, state_change_open;
+    trip1_1 (state = closed AND ar_status = auto) -> state := open, auto_reclose_wait := true, cb_state_open, state_change_open;
+  triggeredby trip;
+  transition open_unexplained
+    open_unexplained_0 state = closed -> state := open, cb_state_open, state_change_open, count_as_fault;
+  transition open1
+    open1_0 state = closed -> state := open, cb_state_open, state_change_open;
+  triggeredby open;
+}
+component Bus_X5 = {
+  var mvar : {zero,high,low,normal};
+  var mw : {zero,high,low,normal};
+  var voltage : {zero,high,low,normal};
+  var iso_state_changed : [0..1];
+  var isolated : [0..1];
+  event check_generators_off;
+  event check_switched_in;
+  event check_switched_out;
+  event count_as_fault;
+  event set_isolated_false;
+  event set_isolated_true;
+  event mvar_zero;
+  event mvar_normal;
+  event mvar_high;
+  event mvar_low;
+  event mw_zero;
+  event mw_normal;
+  event mw_high;
+  event mw_low;
+  event voltage_zero;
+  event voltage_normal;
+  event voltage_high;
+  event voltage_low;
+  event entered_zero_zone_MVAR;
+  event limit_MVAR_High;
+  event limit_MVAR_High_5;
+  event limit_MVAR_High_4;
+  event limit_MVAR_High_3;
+  event limit_MVAR_High_2;
+  event limit_MVAR_High_1;
+  event limit_MVAR_Low;
+  event limit_MVAR_Low_5;
+  event limit_MVAR_Low_4;
+  event limit_MVAR_Low_3;
+  event limit_MVAR_Low_2;
+  event limit_MVAR_Low_1;
+  event limit_MVAR_Normal;
+  event entered_zero_zone_MW;
+  event limit_MW_High;
+  event limit_MW_High_5;
+  event limit_MW_High_4;
+  event limit_MW_High_3;
+  event limit_MW_High_2;
+  event limit_MW_High_1;
+  event limit_MW_Low;
+  event limit_MW_Low_5;
+  event limit_MW_Low_4;
+  event limit_MW_Low_3;
+  event limit_MW_Low_2;
+  event limit_MW_Low_1;
+  event limit_MW_Normal;
+  event entered_zero_zone_KV;
+  event limit_KV_High;
+  event limit_KV_High_5;
+  event limit_KV_High_4;
+  event limit_KV_High_3;
+  event limit_KV_High_2;
+  event limit_KV_High_1;
+  event limit_KV_Low;
+  event limit_KV_Low_5;
+  event limit_KV_Low_4;
+  event limit_KV_Low_3;
+  event limit_KV_Low_2;
+  event limit_KV_Low_1;
+  event limit_KV_Normal;
+  transition mvar_goes_to_zero
+    mvar_goes_to_zero_0 true = 1 -> mvar := zero, entered_zero_zone_MVAR;
+  triggeredby mvar_zero;
+  transition mvar_goes_normal
+    mvar_goes_normal_0 true = 1 -> mvar := normal, limit_MVAR_Normal;
+  triggeredby mvar_normal;
+  transition mvar_goes_high
+    mvar_goes_high_0 true = 1 -> mvar := high, limit_MVAR_High;
+    mvar_goes_high_1 true = 1 -> mvar := high, limit_MVAR_High_5;
+    mvar_goes_high_2 true = 1 -> mvar := high, limit_MVAR_High_4;
+    mvar_goes_high_3 true = 1 -> mvar := high, limit_MVAR_High_3;
+    mvar_goes_high_4 true = 1 -> mvar := high, limit_MVAR_High_2;
+    mvar_goes_high_5 true = 1 -> mvar := high, limit_MVAR_High_1;
+  triggeredby mvar_high;
+  transition mvar_goes_low
+    mvar_goes_low_0 true = 1 -> mvar := low, limit_MVAR_Low;
+    mvar_goes_low_1 true = 1 -> mvar := low, limit_MVAR_Low_5;
+    mvar_goes_low_2 true = 1 -> mvar := low, limit_MVAR_Low_4;
+    mvar_goes_low_3 true = 1 -> mvar := low, limit_MVAR_Low_3;
+    mvar_goes_low_4 true = 1 -> mvar := low, limit_MVAR_Low_2;
+    mvar_goes_low_5 true = 1 -> mvar := low, limit_MVAR_Low_1;
+  triggeredby mvar_low;
+  transition mvar_goes_to_zero_unexplained
+    mvar_goes_to_zero_unexplained_0 true = 1 -> mvar := zero, entered_zero_zone_MVAR, count_as_fault;
+  transition mvar_goes_normal_unexplained
+    mvar_goes_normal_unexplained_0 true = 1 -> mvar := normal, limit_MVAR_Normal, count_as_fault;
+  transition mvar_goes_high_unexplained
+    mvar_goes_high_unexplained_0 true = 1 -> mvar := high, limit_MVAR_High, count_as_fault;
+    mvar_goes_high_unexplained_1 true = 1 -> mvar := high, limit_MVAR_High_5, count_as_fault;
+    mvar_goes_high_unexplained_2 true = 1 -> mvar := high, limit_MVAR_High_4, count_as_fault;
+    mvar_goes_high_unexplained_3 true = 1 -> mvar := high, limit_MVAR_High_3, count_as_fault;
+    mvar_goes_high_unexplained_4 true = 1 -> mvar := high, limit_MVAR_High_2, count_as_fault;
+    mvar_goes_high_unexplained_5 true = 1 -> mvar := high, limit_MVAR_High_1, count_as_fault;
+  transition mvar_goes_low_unexplained
+    mvar_goes_low_unexplained_0 true = 1 -> mvar := low, limit_MVAR_Low, count_as_fault;
+    mvar_goes_low_unexplained_1 true = 1 -> mvar := low, limit_MVAR_Low_5, count_as_fault;
+    mvar_goes_low_unexplained_2 true = 1 -> mvar := low, limit_MVAR_Low_4, count_as_fault;
+    mvar_goes_low_unexplained_3 true = 1 -> mvar := low, limit_MVAR_Low_3, count_as_fault;
+    mvar_goes_low_unexplained_4 true = 1 -> mvar := low, limit_MVAR_Low_2, count_as_fault;
+    mvar_goes_low_unexplained_5 true = 1 -> mvar := low, limit_MVAR_Low_1, count_as_fault;
+  transition mw_goes_normal_when_reenergised
+    mw_goes_normal_when_reenergised_0 (isolated = false AND iso_state_changed = true) -> mw := normal, limit_MW_Normal;
+  transition mw_goes_high_when_reenergised
+    mw_goes_high_when_reenergised_0 (isolated = false AND iso_state_changed = true) -> mw := high, limit_MW_High;
+    mw_goes_high_when_reenergised_1 (isolated = false AND iso_state_changed = true) -> mw := high, limit_MW_High_5;
+    mw_goes_high_when_reenergised_2 (isolated = false AND iso_state_changed = true) -> mw := high, limit_MW_High_4;
+    mw_goes_high_when_reenergised_3 (isolated = false AND iso_state_changed = true) -> mw := high, limit_MW_High_3;
+    mw_goes_high_when_reenergised_4 (isolated = false AND iso_state_changed = true) -> mw := high, limit_MW_High_2;
+    mw_goes_high_when_reenergised_5 (isolated = false AND iso_state_changed = true) -> mw := high, limit_MW_High_1;
+  transition mw_goes_low_when_reenergised
+    mw_goes_low_when_reenergised_0 (isolated = false AND iso_state_changed = true) -> mw := low, limit_MW_Low;
+    mw_goes_low_when_reenergised_1 (isolated = false AND iso_state_changed = true) -> mw := low, limit_MW_Low_5;
+    mw_goes_low_when_reenergised_2 (isolated = false AND iso_state_changed = true) -> mw := low, limit_MW_Low_4;
+    mw_goes_low_when_reenergised_3 (isolated = false AND iso_state_changed = true) -> mw := low, limit_MW_Low_3;
+    mw_goes_low_when_reenergised_4 (isolated = false AND iso_state_changed = true) -> mw := low, limit_MW_Low_2;
+    mw_goes_low_when_reenergised_5 (isolated = false AND iso_state_changed = true) -> mw := low, limit_MW_Low_1;
+  transition mw_goes_to_zero_when_isolated
+    mw_goes_to_zero_when_isolated_0 (isolated = true AND iso_state_changed = true) -> mw := zero, entered_zero_zone_MW, check_generators_off;
+  transition mw_goes_low_when_isolated
+    mw_goes_low_when_isolated_0 (isolated = true AND iso_state_changed = true) -> mw := low, limit_MW_Low, check_generators_off;
+    mw_goes_low_when_isolated_1 (isolated = true AND iso_state_changed = true) -> mw := low, limit_MW_Low_5, check_generators_off;
+    mw_goes_low_when_isolated_2 (isolated = true AND iso_state_changed = true) -> mw := low, limit_MW_Low_4, check_generators_off;
+    mw_goes_low_when_isolated_3 (isolated = true AND iso_state_changed = true) -> mw := low, limit_MW_Low_3, check_generators_off;
+    mw_goes_low_when_isolated_4 (isolated = true AND iso_state_changed = true) -> mw := low, limit_MW_Low_2, check_generators_off;
+    mw_goes_low_when_isolated_5 (isolated = true AND iso_state_changed = true) -> mw := low, limit_MW_Low_1, check_generators_off;
+  transition mw_goes_to_zero
+    mw_goes_to_zero_0 true = 1 -> mw := zero, entered_zero_zone_MW;
+  triggeredby mw_zero;
+  transition mw_goes_normal
+    mw_goes_normal_0 true = 1 -> mw := normal, limit_MW_Normal;
+  triggeredby mw_normal;
+  transition mw_goes_high
+    mw_goes_high_0 true = 1 -> mw := high, limit_MW_High;
+    mw_goes_high_1 true = 1 -> mw := high, limit_MW_High_5;
+    mw_goes_high_2 true = 1 -> mw := high, limit_MW_High_4;
+    mw_goes_high_3 true = 1 -> mw := high, limit_MW_High_3;
+    mw_goes_high_4 true = 1 -> mw := high, limit_MW_High_2;
+    mw_goes_high_5 true = 1 -> mw := high, limit_MW_High_1;
+  triggeredby mw_high;
+  transition mw_goes_low
+    mw_goes_low_0 true = 1 -> mw := low, limit_MW_Low;
+    mw_goes_low_1 true = 1 -> mw := low, limit_MW_Low_5;
+    mw_goes_low_2 true = 1 -> mw := low, limit_MW_Low_4;
+    mw_goes_low_3 true = 1 -> mw := low, limit_MW_Low_3;
+    mw_goes_low_4 true = 1 -> mw := low, limit_MW_Low_2;
+    mw_goes_low_5 true = 1 -> mw := low, limit_MW_Low_1;
+  triggeredby mw_low;
+  transition mw_goes_to_zero_unexplained
+    mw_goes_to_zero_unexplained_0 true = 1 -> mw := zero, entered_zero_zone_MW, count_as_fault;
+  transition mw_goes_normal_unexplained
+    mw_goes_normal_unexplained_0 true = 1 -> mw := normal, limit_MW_Normal, count_as_fault;
+  transition mw_goes_high_unexplained
+    mw_goes_high_unexplained_0 true = 1 -> mw := high, limit_MW_High, count_as_fault;
+    mw_goes_high_unexplained_1 true = 1 -> mw := high, limit_MW_High_5, count_as_fault;
+    mw_goes_high_unexplained_2 true = 1 -> mw := high, limit_MW_High_4, count_as_fault;
+    mw_goes_high_unexplained_3 true = 1 -> mw := high, limit_MW_High_3, count_as_fault;
+    mw_goes_high_unexplained_4 true = 1 -> mw := high, limit_MW_High_2, count_as_fault;
+    mw_goes_high_unexplained_5 true = 1 -> mw := high, limit_MW_High_1, count_as_fault;
+  transition mw_goes_low_unexplained
+    mw_goes_low_unexplained_0 true = 1 -> mw := low, limit_MW_Low, count_as_fault;
+    mw_goes_low_unexplained_1 true = 1 -> mw := low, limit_MW_Low_5, count_as_fault;
+    mw_goes_low_unexplained_2 true = 1 -> mw := low, limit_MW_Low_4, count_as_fault;
+    mw_goes_low_unexplained_3 true = 1 -> mw := low, limit_MW_Low_3, count_as_fault;
+    mw_goes_low_unexplained_4 true = 1 -> mw := low, limit_MW_Low_2, count_as_fault;
+    mw_goes_low_unexplained_5 true = 1 -> mw := low, limit_MW_Low_1, count_as_fault;
+  transition voltage_goes_normal_when_caps_in
+    voltage_goes_normal_when_caps_in_0 (voltage = low AND isolated = false) -> voltage := normal, limit_KV_Normal, check_switched_in;
+  transition voltage_goes_normal_when_caps_out
+    voltage_goes_normal_when_caps_out_0 (voltage = high AND isolated = false) -> voltage := normal, limit_KV_Normal, check_switched_out;
+  transition voltage_goes_normal_when_reenergised
+    voltage_goes_normal_when_reenergised_0 (isolated = false AND iso_state_changed = true) -> voltage := normal, limit_KV_Normal;
+  transition voltage_goes_high_when_reenergised
+    voltage_goes_high_when_reenergised_0 (isolated = false AND iso_state_changed = true) -> voltage := high, limit_KV_High;
+    voltage_goes_high_when_reenergised_1 (isolated = false AND iso_state_changed = true) -> voltage := high, limit_KV_High_5;
+    voltage_goes_high_when_reenergised_2 (isolated = false AND iso_state_changed = true) -> voltage := high, limit_KV_High_4;
+    voltage_goes_high_when_reenergised_3 (isolated = false AND iso_state_changed = true) -> voltage := high, limit_KV_High_3;
+    voltage_goes_high_when_reenergised_4 (isolated = false AND iso_state_changed = true) -> voltage := high, limit_KV_High_2;
+    voltage_goes_high_when_reenergised_5 (isolated = false AND iso_state_changed = true) -> voltage := high, limit_KV_High_1;
+  transition voltage_goes_Low_when_reenergised
+    voltage_goes_Low_when_reenergised_0 (isolated = false AND iso_state_changed = true) -> voltage := low, limit_KV_Low;
+    voltage_goes_Low_when_reenergised_1 (isolated = false AND iso_state_changed = true) -> voltage := low, limit_KV_Low_5;
+    voltage_goes_Low_when_reenergised_2 (isolated = false AND iso_state_changed = true) -> voltage := low, limit_KV_Low_4;
+    voltage_goes_Low_when_reenergised_3 (isolated = false AND iso_state_changed = true) -> voltage := low, limit_KV_Low_3;
+    voltage_goes_Low_when_reenergised_4 (isolated = false AND iso_state_changed = true) -> voltage := low, limit_KV_Low_2;
+    voltage_goes_Low_when_reenergised_5 (isolated = false AND iso_state_changed = true) -> voltage := low, limit_KV_Low_1;
+  transition voltage_goes_to_zero_when_isolated
+    voltage_goes_to_zero_when_isolated_0 (isolated = true AND iso_state_changed = true) -> voltage := zero, entered_zero_zone_KV, check_generators_off;
+  transition voltage_goes_low_when_isolated
+    voltage_goes_low_when_isolated_0 (isolated = true AND iso_state_changed = true) -> voltage := low, limit_KV_Low, check_generators_off;
+    voltage_goes_low_when_isolated_1 (isolated = true AND iso_state_changed = true) -> voltage := low, limit_KV_Low_5, check_generators_off;
+    voltage_goes_low_when_isolated_2 (isolated = true AND iso_state_changed = true) -> voltage := low, limit_KV_Low_4, check_generators_off;
+    voltage_goes_low_when_isolated_3 (isolated = true AND iso_state_changed = true) -> voltage := low, limit_KV_Low_3, check_generators_off;
+    voltage_goes_low_when_isolated_4 (isolated = true AND iso_state_changed = true) -> voltage := low, limit_KV_Low_2, check_generators_off;
+    voltage_goes_low_when_isolated_5 (isolated = true AND iso_state_changed = true) -> voltage := low, limit_KV_Low_1, check_generators_off;
+  transition voltage_goes_to_zero
+    voltage_goes_to_zero_0 true = 1 -> voltage := zero, entered_zero_zone_KV;
+  triggeredby voltage_zero;
+  transition voltage_goes_normal
+    voltage_goes_normal_0 true = 1 -> voltage := normal, limit_KV_Normal;
+  triggeredby voltage_normal;
+  transition voltage_goes_high
+    voltage_goes_high_0 true = 1 -> voltage := high, limit_KV_High;
+    voltage_goes_high_1 true = 1 -> voltage := high, limit_KV_High_5;
+    voltage_goes_high_2 true = 1 -> voltage := high, limit_KV_High_4;
+    voltage_goes_high_3 true = 1 -> voltage := high, limit_KV_High_3;
+    voltage_goes_high_4 true = 1 -> voltage := high, limit_KV_High_2;
+    voltage_goes_high_5 true = 1 -> voltage := high, limit_KV_High_1;
+  triggeredby voltage_high;
+  transition voltage_goes_low
+    voltage_goes_low_0 true = 1 -> voltage := low, limit_KV_Low;
+    voltage_goes_low_1 true = 1 -> voltage := low, limit_KV_Low_5;
+    voltage_goes_low_2 true = 1 -> voltage := low, limit_KV_Low_4;
+    voltage_goes_low_3 true = 1 -> voltage := low, limit_KV_Low_3;
+    voltage_goes_low_4 true = 1 -> voltage := low, limit_KV_Low_2;
+    voltage_goes_low_5 true = 1 -> voltage := low, limit_KV_Low_1;
+  triggeredby voltage_low;
+  transition voltage_goes_to_zero_unexplained
+    voltage_goes_to_zero_unexplained_0 true = 1 -> voltage := zero, entered_zero_zone_KV, count_as_fault;
+  transition voltage_goes_normal_unexplained
+    voltage_goes_normal_unexplained_0 true = 1 -> voltage := normal, limit_KV_Normal, count_as_fault;
+  transition voltage_goes_high_unexplained
+    voltage_goes_high_unexplained_0 true = 1 -> voltage := high, limit_KV_High, count_as_fault;
+    voltage_goes_high_unexplained_1 true = 1 -> voltage := high, limit_KV_High_5, count_as_fault;
+    voltage_goes_high_unexplained_2 true = 1 -> voltage := high, limit_KV_High_4, count_as_fault;
+    voltage_goes_high_unexplained_3 true = 1 -> voltage := high, limit_KV_High_3, count_as_fault;
+    voltage_goes_high_unexplained_4 true = 1 -> voltage := high, limit_KV_High_2, count_as_fault;
+    voltage_goes_high_unexplained_5 true = 1 -> voltage := high, limit_KV_High_1, count_as_fault;
+  transition voltage_goes_low_unexplained
+    voltage_goes_low_unexplained_0 true = 1 -> voltage := low, limit_KV_Low, count_as_fault;
+    voltage_goes_low_unexplained_1 true = 1 -> voltage := low, limit_KV_Low_5, count_as_fault;
+    voltage_goes_low_unexplained_2 true = 1 -> voltage := low, limit_KV_Low_4, count_as_fault;
+    voltage_goes_low_unexplained_3 true = 1 -> voltage := low, limit_KV_Low_3, count_as_fault;
+    voltage_goes_low_unexplained_4 true = 1 -> voltage := low, limit_KV_Low_2, count_as_fault;
+    voltage_goes_low_unexplained_5 true = 1 -> voltage := low, limit_KV_Low_1, count_as_fault;
+  transition iso_state_changed_timeout
+    iso_state_changed_timeout_0 true = 1 -> iso_state_changed := false;
+  triggeredby [0.0..15.0] iso_state_changed = true;
+  transition become_not_isolated
+    become_not_isolated_0 true = 1 -> isolated := false, iso_state_changed := true;
+  triggeredby set_isolated_false;
+  transition become_isolated
+    become_isolated_0 true = 1 -> isolated := true, iso_state_changed := true;
+  triggeredby set_isolated_true;
+}
+component network = {
+  var reactor_switched_in_ff : [0..1];
+  var reactor_switched_out_ff : [0..1];
+  var capacitor_switched_in_ff : [0..1];
+  var capacitor_switched_out_ff : [0..1];
+  var reactor_switched_in : [0..1];
+  var reactor_switched_out : [0..1];
+  var capacitor_switched_in : [0..1];
+  var capacitor_switched_out : [0..1];
+  event check_switched_out;
+  event check_switched_in;
+  event reactor_isolator_close;
+  event reactor_isolator_open;
+  event capacitor_isolator_close;
+  event capacitor_isolator_open;
+  event IMPOSSIBLE;
+  transition check_switched_out_transition
+    check_switched_out_transition_0 NOT capacitor_switched_out = true -> IMPOSSIBLE;
+    check_switched_out_transition_1 capacitor_switched_out = true -> capacitor_switched_out := true;
+  triggeredby check_switched_out;
+  transition check_switched_in_transition
+    check_switched_in_transition_0 NOT capacitor_switched_in = true -> IMPOSSIBLE;
+    check_switched_in_transition_1 capacitor_switched_in = true -> capacitor_switched_in := true;
+  triggeredby check_switched_in;
+  transition reactor_switched_in_timeout
+    reactor_switched_in_timeout_0 true = 1 -> reactor_switched_in := false;
+  triggeredby [0.0..15.0] reactor_switched_in = true;
+  transition reactor_switched_out_timeout
+    reactor_switched_out_timeout_0 true = 1 -> reactor_switched_out := false;
+  triggeredby [0.0..15.0] reactor_switched_out = true;
+  transition capacitor_switched_in_timeout
+    capacitor_switched_in_timeout_0 true = 1 -> capacitor_switched_in := false;
+  triggeredby [0.0..15.0] capacitor_switched_in = true;
+  transition capacitor_switched_out_timeout
+    capacitor_switched_out_timeout_0 true = 1 -> capacitor_switched_out := false;
+  triggeredby [0.0..15.0] capacitor_switched_out = true;
+  transition reactor_switch_in
+    reactor_switch_in_0 reactor_switched_in_ff = false -> reactor_switched_in := true, reactor_switched_in_ff := true;
+    reactor_switch_in_1 reactor_switched_in_ff = true -> reactor_switched_in := true, reactor_switched_in_ff := false;
+  triggeredby reactor_isolator_close;
+  transition reactor_switch_out
+    reactor_switch_out_0 reactor_switched_out_ff = false -> reactor_switched_out := true, reactor_switched_out_ff := true;
+    reactor_switch_out_1 reactor_switched_out_ff = true -> reactor_switched_out := true, reactor_switched_out_ff := false;
+  triggeredby reactor_isolator_open;
+  transition capacitor_switch_in
+    capacitor_switch_in_0 capacitor_switched_in_ff = false -> capacitor_switched_in := true, capacitor_switched_in_ff := true;
+    capacitor_switch_in_1 capacitor_switched_in_ff = true -> capacitor_switched_in := true, capacitor_switched_in_ff := false;
+  triggeredby capacitor_isolator_close;
+  transition capacitor_switch_out
+    capacitor_switch_out_0 capacitor_switched_out_ff = false -> capacitor_switched_out := true, capacitor_switched_out_ff := true;
+    capacitor_switch_out_1 capacitor_switched_out_ff = true -> capacitor_switched_out := true, capacitor_switched_out_ff := false;
+  triggeredby capacitor_isolator_open;
+}
+synchronize Bus_X5.check_switched_out,network.check_switched_out;
+synchronize Bus_X5.check_switched_in,network.check_switched_in;
+Bus_X5.iso_state_changed := false;
+Bus_X5.isolated := false;
+Breaker_X3_X4.auto_reopen_wait := false;
+Breaker_X3_X4.auto_reclose_wait := false;
+Breaker_X3_X4.commanded_ar_non_auto := false;
+Breaker_X3_X4.commanded_ar_auto := false;
+Breaker_X3_X4.commanded_closed := false;
+Breaker_X3_X4.commanded_open := false;
+Breaker_X3_X4.lockout := false;
+Breaker_X1_X2.auto_reopen_wait := false;
+Breaker_X1_X2.auto_reclose_wait := false;
+Breaker_X1_X2.commanded_ar_non_auto := false;
+Breaker_X1_X2.commanded_ar_auto := false;
+Breaker_X1_X2.commanded_closed := false;
+Breaker_X1_X2.commanded_open := false;
+Breaker_X1_X2.lockout := false;
+network.reactor_switched_in_ff := false;
+network.reactor_switched_out_ff := false;
+network.capacitor_switched_in_ff := false;
+network.capacitor_switched_out_ff := false;
+network.reactor_switched_in := false;
+network.reactor_switched_out := false;
+network.capacitor_switched_in := false;
+network.capacitor_switched_out := false;
+observable Breaker_X1_X2.IMPOSSIBLE;
+observable Breaker_X1_X2.command_cb_ar_status_NON_AUTO;
+observable Breaker_X1_X2.command_cb_ar_status_AUTO;
+observable Breaker_X1_X2.command_ar_supy_control_status_NON_AUTO;
+observable Breaker_X1_X2.command_ar_supy_control_status_AUTO;
+observable Breaker_X1_X2.command_cb_state_closed;
+observable Breaker_X1_X2.command_cb_state_open;
+observable Breaker_X1_X2.cb_ar_status_NON_AUTO;
+observable Breaker_X1_X2.cb_ar_status_AUTO;
+observable Breaker_X1_X2.ar_supy_control_status_NON_AUTO;
+observable Breaker_X1_X2.ar_supy_control_status_AUTO;
+observable Breaker_X1_X2.cb_command_fail;
+observable Breaker_X1_X2.cb_state_not_responding;
+observable Breaker_X1_X2.cb_state_abnormal;
+observable Breaker_X1_X2.cb_state_closed;
+observable Breaker_X1_X2.cb_state_open;
+observable Breaker_X3_X4.IMPOSSIBLE;
+observable Breaker_X3_X4.command_cb_ar_status_NON_AUTO;
+observable Breaker_X3_X4.command_cb_ar_status_AUTO;
+observable Breaker_X3_X4.command_ar_supy_control_status_NON_AUTO;
+observable Breaker_X3_X4.command_ar_supy_control_status_AUTO;
+observable Breaker_X3_X4.command_cb_state_closed;
+observable Breaker_X3_X4.command_cb_state_open;
+observable Breaker_X3_X4.cb_ar_status_NON_AUTO;
+observable Breaker_X3_X4.cb_ar_status_AUTO;
+observable Breaker_X3_X4.ar_supy_control_status_NON_AUTO;
+observable Breaker_X3_X4.ar_supy_control_status_AUTO;
+observable Breaker_X3_X4.cb_command_fail;
+observable Breaker_X3_X4.cb_state_not_responding;
+observable Breaker_X3_X4.cb_state_abnormal;
+observable Breaker_X3_X4.cb_state_closed;
+observable Breaker_X3_X4.cb_state_open;
+observable Bus_X5.entered_zero_zone_MVAR;
+observable Bus_X5.limit_MVAR_High;
+observable Bus_X5.limit_MVAR_High_5;
+observable Bus_X5.limit_MVAR_High_4;
+observable Bus_X5.limit_MVAR_High_3;
+observable Bus_X5.limit_MVAR_High_2;
+observable Bus_X5.limit_MVAR_High_1;
+observable Bus_X5.limit_MVAR_Low;
+observable Bus_X5.limit_MVAR_Low_5;
+observable Bus_X5.limit_MVAR_Low_4;
+observable Bus_X5.limit_MVAR_Low_3;
+observable Bus_X5.limit_MVAR_Low_2;
+observable Bus_X5.limit_MVAR_Low_1;
+observable Bus_X5.limit_MVAR_Normal;
+observable Bus_X5.entered_zero_zone_MW;
+observable Bus_X5.limit_MW_High;
+observable Bus_X5.limit_MW_High_5;
+observable Bus_X5.limit_MW_High_4;
+observable Bus_X5.limit_MW_High_3;
+observable Bus_X5.limit_MW_High_2;
+observable Bus_X5.limit_MW_High_1;
+observable Bus_X5.limit_MW_Low;
+observable Bus_X5.limit_MW_Low_5;
+observable Bus_X5.limit_MW_Low_4;
+observable Bus_X5.limit_MW_Low_3;
+observable Bus_X5.limit_MW_Low_2;
+observable Bus_X5.limit_MW_Low_1;
+observable Bus_X5.limit_MW_Normal;
+observable Bus_X5.entered_zero_zone_KV;
+observable Bus_X5.limit_KV_High;
+observable Bus_X5.limit_KV_High_5;
+observable Bus_X5.limit_KV_High_4;
+observable Bus_X5.limit_KV_High_3;
+observable Bus_X5.limit_KV_High_2;
+observable Bus_X5.limit_KV_High_1;
+observable Bus_X5.limit_KV_Low;
+observable Bus_X5.limit_KV_Low_5;
+observable Bus_X5.limit_KV_Low_4;
+observable Bus_X5.limit_KV_Low_3;
+observable Bus_X5.limit_KV_Low_2;
+observable Bus_X5.limit_KV_Low_1;
+observable Bus_X5.limit_KV_Normal;
+observable network.IMPOSSIBLE;

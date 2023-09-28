@@ -1,0 +1,1 @@
+java -classpath lib/diag.jar:lib/antlr-3.2.jar diag.auto._JTDiagnoser net=data/tg2/chunk-004.mmld-ground obs=data/tg2/chunk-004.alarms

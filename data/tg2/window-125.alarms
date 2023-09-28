@@ -1,0 +1,61 @@
+// from 2009-07-02 07:33:18 to + 1 minute: 13 observations (2 alarms)
+
+// at 2009-07-02 07:33:18
+time = 0.0
+Breaker_X9_X10.cb_state_closed
+time = 1.0
+
+// at 2009-07-02 07:33:29
+time = 11.0
+Breaker_X7_X8.command_cb_state_open
+time = 12.0
+
+// at 2009-07-02 07:33:31
+time = 13.0
+Breaker_X7_X8.cb_state_open
+time = 14.0
+
+// at 2009-07-02 07:33:35
+time = 17.0
+Breaker_X1_X2.cb_state_open
+time = 18.0
+
+// at 2009-07-02 07:33:45
+time = 27.0
+Breaker_X5_X6.command_cb_state_open
+time = 28.0
+
+// at 2009-07-02 07:33:47
+time = 29.0
+Breaker_X5_X6.cb_state_open
+time = 30.0
+
+// at 2009-07-02 07:33:59
+time = 41.0
+Breaker_X3_X4.command_cb_state_open
+time = 42.0
+
+// at 2009-07-02 07:34:01
+time = 43.0
+Breaker_X3_X4.cb_state_open
+time = 44.0
+
+// at 2009-07-02 07:34:04
+time = 46.0
+Breaker_X5_X6.command_ar_supy_control_status_NON_AUTO
+time = 47.0
+
+// at 2009-07-02 07:34:06
+time = 48.0
+Bus_X29.limit_KV_Low_5
+Breaker_X5_X6.ar_supy_control_status_NON_AUTO
+time = 49.0
+
+// at 2009-07-02 07:34:11
+time = 53.0
+Breaker_X3_X4.command_ar_supy_control_status_NON_AUTO
+time = 54.0
+
+// at 2009-07-02 07:34:13
+time = 55.0
+Breaker_X3_X4.ar_supy_control_status_NON_AUTO

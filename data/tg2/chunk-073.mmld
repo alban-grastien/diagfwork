@@ -1,0 +1,25 @@
+// from 2009-07-02 09:44:33 to 2009-07-02 09:52:02: 4 components
+component Breaker_X1_X2 = Breaker;
+Breaker_X1_X2.lockout := false;
+Breaker_X1_X2.commanded_open := false;
+Breaker_X1_X2.commanded_closed := false;
+Breaker_X1_X2.commanded_ar_auto := false;
+Breaker_X1_X2.commanded_ar_non_auto := false;
+Breaker_X1_X2.auto_reclose_wait := false;
+Breaker_X1_X2.auto_reopen_wait := false;
+component Breaker_X3_X4 = Breaker;
+Breaker_X3_X4.lockout := false;
+Breaker_X3_X4.commanded_open := false;
+Breaker_X3_X4.commanded_closed := false;
+Breaker_X3_X4.commanded_ar_auto := false;
+Breaker_X3_X4.commanded_ar_non_auto := false;
+Breaker_X3_X4.auto_reclose_wait := false;
+Breaker_X3_X4.auto_reopen_wait := false;
+component Generator_X5 = Generator;
+Generator_X5.status_changing := false;
+Generator_X5.runback := false;
+component Bus_X2 = Bus;
+Bus_X2.isolated := false;
+Bus_X2.iso_state_changed := false;
+bus_in_network(Bus_X2);
+generator_bus_and_breaker(Generator_X5, Bus_X2, Breaker_X1_X2);

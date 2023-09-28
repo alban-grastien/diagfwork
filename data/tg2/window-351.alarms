@@ -1,0 +1,43 @@
+// from 2009-07-02 10:48:10 to + 1 minute: 9 observations (9 alarms)
+
+// at 2009-07-02 10:48:10
+time = 0.0
+Generator_X14.runback_reset
+
+// at 2009-07-02 10:48:11
+time = 1.0
+Generator_X13.runback_reset
+
+// at 2009-07-02 10:48:12
+time = 2.0
+Generator_X15.runback_reset
+time = 3.0
+
+// at 2009-07-02 10:48:19
+time = 9.0
+Line_X18_X19.limit_MW_Normal
+time = 10.0
+
+// at 2009-07-02 10:48:24
+time = 14.0
+Line_X16_X17.limit_MW_Low_3
+time = 15.0
+
+// at 2009-07-02 10:48:31
+time = 21.0
+Breaker_X1_X2.cb_state_open
+time = 22.0
+
+// at 2009-07-02 10:48:36
+time = 26.0
+Line_X16_X17.limit_MW_Low_2
+time = 27.0
+
+// at 2009-07-02 10:48:46
+time = 36.0
+Breaker_X3_X4.cb_state_open
+time = 37.0
+
+// at 2009-07-02 10:49:02
+time = 52.0
+Breaker_X5_X6.cb_state_open

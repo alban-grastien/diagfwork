@@ -1,0 +1,17 @@
+// from 2009-07-02 13:15:43 to 2009-07-02 13:22:31: 5 observations (5 alarms)
+
+// at 2009-07-02 13:15:43
+time = 0.0
+Line_X3_X4.limit_MW_Normal
+Bus_X5.limit_MW_Normal
+time = 1.0
+
+// at 2009-07-02 13:16:07
+time = 24.0
+Line_X3_X4.limit_KV_High_2
+time = 25.0
+
+// at 2009-07-02 13:16:48
+time = 65.0
+Line_X3_X4.limit_KV_Normal
+Breaker_X1_X2.cb_state_open

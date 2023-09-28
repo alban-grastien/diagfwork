@@ -1,0 +1,116 @@
+// from 2009-07-02 10:47:29 to + 1 minute: 49 observations (49 alarms)
+
+// at 2009-07-02 10:47:29
+time = 0.0
+Bus_X43.limit_KV_Normal
+Bus_X61.limit_KV_Normal
+Breaker_X9_X10.cb_state_open
+Breaker_X11_X12.cb_state_open
+Disconnector_X43_X7.sw_state_open
+Breaker_X7_X8.cb_state_not_responding
+Breaker_X21_X22.cb_state_open
+Breaker_X23_X24.cb_state_open
+Bus_X67.limit_KV_Low_3
+Bus_X60.limit_MW_Low_2
+Generator_X45.unit_status_OFF
+
+// at 2009-07-02 10:47:30
+time = 1.0
+Breaker_X1_X2.cb_state_open
+Breaker_X3_X4.cb_state_open
+Breaker_X5_X6.cb_state_open
+Breaker_X15_X16.cb_state_open
+Generator_X47.runback_alarm
+Bus_X64.limit_KV_Normal
+Line_X54_X55.entered_zero_zone_KV
+
+// at 2009-07-02 10:47:31
+time = 2.0
+Generator_X47.runback_reset
+Bus_X67.limit_KV_Normal
+
+// at 2009-07-02 10:47:32
+time = 3.0
+Line_X48_X49.limit_MW_Low_2
+
+// at 2009-07-02 10:47:33
+time = 4.0
+Line_X50_X51.limit_MVAR_High_4
+
+// at 2009-07-02 10:47:34
+time = 5.0
+Bus_X65.limit_MVAR_Normal
+
+// at 2009-07-02 10:47:35
+time = 6.0
+Breaker_X13_X14.cb_state_open
+Generator_X44.unit_status_OFF
+Breaker_X17_X18.cb_state_open
+
+// at 2009-07-02 10:47:36
+time = 7.0
+Generator_X47.unit_status_OFF
+Line_X48_X49.limit_MW_Low_3
+Bus_X61.limit_KV_High_3
+Bus_X66.limit_KV_High_3
+Bus_X62.limit_KV_High_3
+Bus_X63.limit_KV_High_3
+Bus_X18.entered_zero_zone_MW
+
+// at 2009-07-02 10:47:37
+time = 8.0
+Bus_X61.limit_KV_Normal
+Bus_X62.limit_KV_Normal
+
+// at 2009-07-02 10:47:38
+time = 9.0
+Bus_X63.limit_KV_Normal
+time = 10.0
+
+// at 2009-07-02 10:47:41
+time = 12.0
+Breaker_X19_X20.cb_state_closed
+Line_X50_X51.entered_zero_zone_MVAR
+time = 13.0
+
+// at 2009-07-02 10:47:43
+time = 14.0
+Breaker_X25_X26.cb_state_closed
+Breaker_X25_X26.cb_state_open
+
+// at 2009-07-02 10:47:44
+time = 15.0
+Line_X52_X53.limit_MW_Low_2
+Breaker_X1_X2.cb_state_closed
+
+// at 2009-07-02 10:47:45
+time = 16.0
+Line_X48_X49.limit_MW_Low_4
+time = 17.0
+
+// at 2009-07-02 10:47:53
+time = 24.0
+Bus_X66.limit_KV_Normal
+time = 25.0
+
+// at 2009-07-02 10:48:10
+time = 41.0
+Generator_X45.runback_reset
+
+// at 2009-07-02 10:48:11
+time = 42.0
+Generator_X44.runback_reset
+
+// at 2009-07-02 10:48:12
+time = 43.0
+Generator_X46.runback_reset
+time = 44.0
+
+// at 2009-07-02 10:48:19
+time = 50.0
+Line_X52_X53.limit_MW_Normal
+time = 51.0
+
+// at 2009-07-02 10:48:24
+time = 55.0
+Line_X48_X49.limit_MW_Low_3

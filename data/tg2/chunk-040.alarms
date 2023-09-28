@@ -1,0 +1,12 @@
+// from 2009-07-02 07:14:26 to 2009-07-02 07:19:11: 4 observations (4 alarms)
+
+// at 2009-07-02 07:14:26
+time = 0.0
+Line_X3_X4.limit_KV_High_2
+Breaker_X1_X2.cb_state_closed
+time = 1.0
+
+// at 2009-07-02 07:14:42
+time = 16.0
+Line_X3_X4.limit_KV_Normal
+Breaker_X1_X2.cb_state_open

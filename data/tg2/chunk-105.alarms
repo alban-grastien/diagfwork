@@ -1,0 +1,16 @@
+// from 2009-07-02 11:43:05 to 2009-07-02 11:45:02: 4 observations (4 alarms)
+
+// at 2009-07-02 11:43:05
+time = 0.0
+Breaker_X1_X2.cb_state_closed
+Breaker_X1_X2.cb_state_open
+time = 1.0
+
+// at 2009-07-02 11:43:13
+time = 8.0
+Breaker_X1_X2.cb_state_abnormal
+time = 9.0
+
+// at 2009-07-02 11:43:27
+time = 22.0
+Breaker_X1_X2.cb_state_abnormal

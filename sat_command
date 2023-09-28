@@ -1,0 +1,1 @@
+java -classpath lib/diag.jar:lib/antlr-3.2.jar diag.reiter.Test net=data/tg2/chunk-004.mmld-ground faults=data/tg2/chunk-004.faults obs=data/tg2/chunk-004.alarms satsolver=./sat/multisat_core space=diag.reiter.hypos.SetHypothesisSpace solver=diag.reiter.solvers.BottomUp

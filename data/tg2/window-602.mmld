@@ -1,0 +1,25 @@
+// from 2009-07-02 13:16:48 to + 1 minute: 4 components
+component Breaker_X1_X2 = Breaker;
+Breaker_X1_X2.lockout := false;
+Breaker_X1_X2.commanded_open := false;
+Breaker_X1_X2.commanded_closed := false;
+Breaker_X1_X2.commanded_ar_auto := false;
+Breaker_X1_X2.commanded_ar_non_auto := false;
+Breaker_X1_X2.auto_reclose_wait := false;
+Breaker_X1_X2.auto_reopen_wait := false;
+component Line_X3_X4 = Line;
+Line_X3_X4.isolated := false;
+Line_X3_X4.iso_state_changed := false;
+Line_X3_X4.iso_state_may_have_changed := false;
+Line_X3_X4.iso_trip_in_progress := false;
+line_in_network(Line_X3_X4);
+component Bus_X3 = Bus;
+Bus_X3.isolated := false;
+Bus_X3.iso_state_changed := false;
+bus_in_network(Bus_X3);
+component Bus_X4 = Bus;
+Bus_X4.isolated := false;
+Bus_X4.iso_state_changed := false;
+bus_in_network(Bus_X4);
+line_adjacent_busses(Line_X3_X4, Bus_X3, Bus_X4);
+capacitor_switch(Breaker_X1_X2);

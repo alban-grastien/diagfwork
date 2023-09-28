@@ -1,0 +1,8 @@
+// from 2009-07-02 11:43:05 to + 1 minute: 7 components
+Breaker_X1_X2.count_as_fault
+Line_X9_X10.count_as_fault
+Breaker_X3_X4.count_as_fault
+Breaker_X5_X6.count_as_fault
+Breaker_X7_X8.count_as_fault
+Bus_X9.count_as_fault
+Bus_X10.count_as_fault

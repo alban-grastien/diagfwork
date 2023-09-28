@@ -1,0 +1,13 @@
+// from 2009-07-02 06:31:31 to 2009-07-02 06:34:30: 12 components
+Breaker_X1_X2.count_as_fault
+Breaker_X3_X4.count_as_fault
+Breaker_X5_X6.count_as_fault
+Breaker_X7_X8.count_as_fault
+Breaker_X9_X10.count_as_fault
+Breaker_X11_X12.count_as_fault
+Bus_X17.count_as_fault
+Line_X16_X17.count_as_fault
+Breaker_X13_X14.count_as_fault
+Bus_X16.count_as_fault
+Bus_X4.count_as_fault
+Generator_X15.count_as_fault

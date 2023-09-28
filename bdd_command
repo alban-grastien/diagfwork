@@ -1,0 +1,1 @@
+java -Djava.library.path=./lib -classpath lib/diag.jar:lib/antlr-3.2.jar:lib/javabdd-1.0b2.jar diag.symb.javabdd.DiagnoseTestPlus bench=chunk-004 folder=./data/tg2/ first=10000 second=10000

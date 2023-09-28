@@ -1,0 +1,28 @@
+// from 2009-07-02 10:12:11 to + 1 minute: 8 observations (8 alarms)
+
+// at 2009-07-02 10:12:11
+time = 0.0
+Line_X11_X12.limit_KV_Low_5
+time = 1.0
+
+// at 2009-07-02 10:12:14
+time = 3.0
+Line_X9_X10.limit_KV_Normal
+time = 4.0
+
+// at 2009-07-02 10:12:25
+time = 14.0
+Breaker_X5_X6.cb_state_closed
+time = 15.0
+
+// at 2009-07-02 10:12:27
+time = 16.0
+Line_X11_X12.limit_KV_Normal
+Breaker_X3_X4.cb_state_closed
+Breaker_X1_X2.cb_state_closed
+time = 17.0
+
+// at 2009-07-02 10:12:30
+time = 19.0
+Line_X9_X10.limit_KV_High_2
+Breaker_X7_X8.cb_state_closed

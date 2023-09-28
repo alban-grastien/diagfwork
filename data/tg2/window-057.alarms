@@ -1,0 +1,25 @@
+// from 2009-07-02 06:32:04 to + 1 minute: 5 observations (1 alarms)
+
+// at 2009-07-02 06:32:04
+time = 0.0
+Breaker_X3_X4.command_cb_state_open
+time = 1.0
+
+// at 2009-07-02 06:32:06
+time = 2.0
+Breaker_X3_X4.cb_state_open
+time = 3.0
+
+// at 2009-07-02 06:32:11
+time = 7.0
+Bus_X12.entered_zero_zone_KV
+time = 8.0
+
+// at 2009-07-02 06:32:54
+time = 50.0
+Breaker_X1_X2.command_cb_state_open
+time = 51.0
+
+// at 2009-07-02 06:32:56
+time = 52.0
+Breaker_X1_X2.cb_state_open

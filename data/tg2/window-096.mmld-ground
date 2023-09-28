@@ -1,0 +1,490 @@
+component Breaker_X1_X2 = {
+  var auto_reopen_wait : [0..1];
+  var auto_reclose_wait : [0..1];
+  var commanded_ar_non_auto : [0..1];
+  var commanded_ar_auto : [0..1];
+  var commanded_closed : [0..1];
+  var commanded_open : [0..1];
+  var lockout : [0..1];
+  var ar_status : {auto,non_auto};
+  var state : {open,closed};
+  event state_change_close;
+  event state_change_open;
+  event breaker_is_closed;
+  event count_as_fault;
+  event check_isolator_open;
+  event close;
+  event simple_trip;
+  event trip;
+  event open;
+  event IMPOSSIBLE;
+  event command_cb_ar_status_NON_AUTO;
+  event command_cb_ar_status_AUTO;
+  event command_ar_supy_control_status_NON_AUTO;
+  event command_ar_supy_control_status_AUTO;
+  event command_cb_state_closed;
+  event command_cb_state_open;
+  event cb_ar_status_NON_AUTO;
+  event cb_ar_status_AUTO;
+  event ar_supy_control_status_NON_AUTO;
+  event ar_supy_control_status_AUTO;
+  event cb_command_fail;
+  event cb_state_not_responding;
+  event cb_state_abnormal;
+  event cb_state_closed;
+  event cb_state_open;
+  transition breaker_is_closed_transition
+    breaker_is_closed_transition_0 state = closed -> breaker_is_closed;
+  transition check_isolator_open_transition
+    check_isolator_open_transition_0 true = 1 -> IMPOSSIBLE;
+    check_isolator_open_transition_1 state = open -> state := open;
+  triggeredby check_isolator_open;
+  transition auto_reopen_wait_timeout
+    auto_reopen_wait_timeout_0 true = 1 -> auto_reopen_wait := false;
+  triggeredby [0.0..1.0] auto_reopen_wait = true;
+  transition auto_reclose_wait_timeout
+    auto_reclose_wait_timeout_0 true = 1 -> auto_reclose_wait := false;
+  triggeredby [0.0..45.0] auto_reclose_wait = true;
+  transition commanded_ar_non_auto_timeout
+    commanded_ar_non_auto_timeout_0 true = 1 -> commanded_ar_non_auto := false;
+  triggeredby [0.0..45.0] commanded_ar_non_auto = true;
+  transition commanded_ar_auto_timeout
+    commanded_ar_auto_timeout_0 true = 1 -> commanded_ar_auto := false;
+  triggeredby [0.0..45.0] commanded_ar_auto = true;
+  transition commanded_closed_timeout
+    commanded_closed_timeout_0 true = 1 -> commanded_closed := false;
+  triggeredby [0.0..45.0] commanded_closed = true;
+  transition commanded_open_timeout
+    commanded_open_timeout_0 true = 1 -> commanded_open := false;
+  triggeredby [0.0..45.0] commanded_open = true;
+  transition not_responding
+    not_responding_0 true = 1 -> cb_state_not_responding, count_as_fault;
+  transition abnormal
+    abnormal_0 true = 1 -> cb_state_abnormal, count_as_fault;
+  transition ar_status_non_auto_unexplained
+    ar_status_non_auto_unexplained_0 true = 1 -> ar_status := non_auto, cb_ar_status_NON_AUTO, count_as_fault;
+    ar_status_non_auto_unexplained_1 true = 1 -> ar_status := non_auto, ar_supy_control_status_NON_AUTO, count_as_fault;
+  transition ar_status_auto_unexplained
+    ar_status_auto_unexplained_0 true = 1 -> ar_status := auto, cb_ar_status_AUTO, count_as_fault;
+    ar_status_auto_unexplained_1 true = 1 -> ar_status := auto, ar_supy_control_status_AUTO, count_as_fault;
+  transition ar_status_non_auto
+    ar_status_non_auto_0 commanded_ar_non_auto = true -> ar_status := non_auto, cb_ar_status_NON_AUTO;
+    ar_status_non_auto_1 commanded_ar_non_auto = true -> ar_status := non_auto, ar_supy_control_status_NON_AUTO;
+  transition ar_status_auto
+    ar_status_auto_0 commanded_ar_auto = true -> ar_status := auto, cb_ar_status_AUTO;
+    ar_status_auto_1 commanded_ar_auto = true -> ar_status := auto, ar_supy_control_status_AUTO;
+  transition command_ar_non_auto
+    command_ar_non_auto_0 true = 1 -> commanded_ar_non_auto := true, command_cb_ar_status_NON_AUTO;
+    command_ar_non_auto_1 true = 1 -> commanded_ar_non_auto := true, command_ar_supy_control_status_NON_AUTO;
+  transition command_ar_auto
+    command_ar_auto_0 true = 1 -> commanded_ar_auto := true, command_cb_ar_status_AUTO;
+    command_ar_auto_1 true = 1 -> commanded_ar_auto := true, command_ar_supy_control_status_AUTO;
+  transition command_close_fail
+    command_close_fail_0 commanded_closed = true -> cb_command_fail;
+  transition close_on_command
+    close_on_command_0 (state = open AND commanded_closed = true) -> state := closed, cb_state_closed, state_change_close;
+  transition command_close
+    command_close_0 true = 1 -> commanded_closed := true, command_cb_state_closed;
+  transition command_open_fail
+    command_open_fail_0 commanded_open = true -> cb_command_fail;
+  transition open_on_command
+    open_on_command_0 (state = closed AND commanded_open = true) -> state := open, cb_state_open, state_change_open;
+  transition command_open
+    command_open_0 true = 1 -> commanded_open := true, command_cb_state_open;
+  transition reopen
+    reopen_0 (state = closed AND auto_reopen_wait = true) -> state := open, auto_reopen_wait := false, lockout := true, cb_state_open, state_change_open;
+  transition reclose
+    reclose_0 ((state = open AND auto_reclose_wait = true) AND lockout = false) -> state := closed, auto_reclose_wait := false, auto_reopen_wait := true, cb_state_closed, state_change_close;
+  transition close_unexplained
+    close_unexplained_0 state = open -> state := closed, cb_state_closed, state_change_close, count_as_fault;
+  transition close1
+    close1_0 state = open -> state := closed, cb_state_closed, state_change_close;
+  triggeredby close;
+  transition trip_unexplained
+    trip_unexplained_0 (state = closed AND ar_status = auto) -> state := open, auto_reclose_wait := true, cb_state_open, state_change_open, count_as_fault;
+  transition simple_trip1
+    simple_trip1_0 state = open -> state := open;
+    simple_trip1_1 (state = closed AND ar_status = non_auto) -> state := open, cb_state_open;
+    simple_trip1_2 (state = closed AND ar_status = auto) -> state := open, auto_reclose_wait := true, cb_state_open;
+  triggeredby simple_trip;
+  transition trip1
+    trip1_0 (state = closed AND ar_status = non_auto) -> state := open, cb_state_open, state_change_open;
+    trip1_1 (state = closed AND ar_status = auto) -> state := open, auto_reclose_wait := true, cb_state_open, state_change_open;
+  triggeredby trip;
+  transition open_unexplained
+    open_unexplained_0 state = closed -> state := open, cb_state_open, state_change_open, count_as_fault;
+  transition open1
+    open1_0 state = closed -> state := open, cb_state_open, state_change_open;
+  triggeredby open;
+}
+component Breaker_X3_X4 = {
+  var auto_reopen_wait : [0..1];
+  var auto_reclose_wait : [0..1];
+  var commanded_ar_non_auto : [0..1];
+  var commanded_ar_auto : [0..1];
+  var commanded_closed : [0..1];
+  var commanded_open : [0..1];
+  var lockout : [0..1];
+  var ar_status : {auto,non_auto};
+  var state : {open,closed};
+  event state_change_close;
+  event state_change_open;
+  event breaker_is_closed;
+  event count_as_fault;
+  event check_isolator_open;
+  event close;
+  event simple_trip;
+  event trip;
+  event open;
+  event IMPOSSIBLE;
+  event command_cb_ar_status_NON_AUTO;
+  event command_cb_ar_status_AUTO;
+  event command_ar_supy_control_status_NON_AUTO;
+  event command_ar_supy_control_status_AUTO;
+  event command_cb_state_closed;
+  event command_cb_state_open;
+  event cb_ar_status_NON_AUTO;
+  event cb_ar_status_AUTO;
+  event ar_supy_control_status_NON_AUTO;
+  event ar_supy_control_status_AUTO;
+  event cb_command_fail;
+  event cb_state_not_responding;
+  event cb_state_abnormal;
+  event cb_state_closed;
+  event cb_state_open;
+  transition breaker_is_closed_transition
+    breaker_is_closed_transition_0 state = closed -> breaker_is_closed;
+  transition check_isolator_open_transition
+    check_isolator_open_transition_0 true = 1 -> IMPOSSIBLE;
+    check_isolator_open_transition_1 state = open -> state := open;
+  triggeredby check_isolator_open;
+  transition auto_reopen_wait_timeout
+    auto_reopen_wait_timeout_0 true = 1 -> auto_reopen_wait := false;
+  triggeredby [0.0..1.0] auto_reopen_wait = true;
+  transition auto_reclose_wait_timeout
+    auto_reclose_wait_timeout_0 true = 1 -> auto_reclose_wait := false;
+  triggeredby [0.0..45.0] auto_reclose_wait = true;
+  transition commanded_ar_non_auto_timeout
+    commanded_ar_non_auto_timeout_0 true = 1 -> commanded_ar_non_auto := false;
+  triggeredby [0.0..45.0] commanded_ar_non_auto = true;
+  transition commanded_ar_auto_timeout
+    commanded_ar_auto_timeout_0 true = 1 -> commanded_ar_auto := false;
+  triggeredby [0.0..45.0] commanded_ar_auto = true;
+  transition commanded_closed_timeout
+    commanded_closed_timeout_0 true = 1 -> commanded_closed := false;
+  triggeredby [0.0..45.0] commanded_closed = true;
+  transition commanded_open_timeout
+    commanded_open_timeout_0 true = 1 -> commanded_open := false;
+  triggeredby [0.0..45.0] commanded_open = true;
+  transition not_responding
+    not_responding_0 true = 1 -> cb_state_not_responding, count_as_fault;
+  transition abnormal
+    abnormal_0 true = 1 -> cb_state_abnormal, count_as_fault;
+  transition ar_status_non_auto_unexplained
+    ar_status_non_auto_unexplained_0 true = 1 -> ar_status := non_auto, cb_ar_status_NON_AUTO, count_as_fault;
+    ar_status_non_auto_unexplained_1 true = 1 -> ar_status := non_auto, ar_supy_control_status_NON_AUTO, count_as_fault;
+  transition ar_status_auto_unexplained
+    ar_status_auto_unexplained_0 true = 1 -> ar_status := auto, cb_ar_status_AUTO, count_as_fault;
+    ar_status_auto_unexplained_1 true = 1 -> ar_status := auto, ar_supy_control_status_AUTO, count_as_fault;
+  transition ar_status_non_auto
+    ar_status_non_auto_0 commanded_ar_non_auto = true -> ar_status := non_auto, cb_ar_status_NON_AUTO;
+    ar_status_non_auto_1 commanded_ar_non_auto = true -> ar_status := non_auto, ar_supy_control_status_NON_AUTO;
+  transition ar_status_auto
+    ar_status_auto_0 commanded_ar_auto = true -> ar_status := auto, cb_ar_status_AUTO;
+    ar_status_auto_1 commanded_ar_auto = true -> ar_status := auto, ar_supy_control_status_AUTO;
+  transition command_ar_non_auto
+    command_ar_non_auto_0 true = 1 -> commanded_ar_non_auto := true, command_cb_ar_status_NON_AUTO;
+    command_ar_non_auto_1 true = 1 -> commanded_ar_non_auto := true, command_ar_supy_control_status_NON_AUTO;
+  transition command_ar_auto
+    command_ar_auto_0 true = 1 -> commanded_ar_auto := true, command_cb_ar_status_AUTO;
+    command_ar_auto_1 true = 1 -> commanded_ar_auto := true, command_ar_supy_control_status_AUTO;
+  transition command_close_fail
+    command_close_fail_0 commanded_closed = true -> cb_command_fail;
+  transition close_on_command
+    close_on_command_0 (state = open AND commanded_closed = true) -> state := closed, cb_state_closed, state_change_close;
+  transition command_close
+    command_close_0 true = 1 -> commanded_closed := true, command_cb_state_closed;
+  transition command_open_fail
+    command_open_fail_0 commanded_open = true -> cb_command_fail;
+  transition open_on_command
+    open_on_command_0 (state = closed AND commanded_open = true) -> state := open, cb_state_open, state_change_open;
+  transition command_open
+    command_open_0 true = 1 -> commanded_open := true, command_cb_state_open;
+  transition reopen
+    reopen_0 (state = closed AND auto_reopen_wait = true) -> state := open, auto_reopen_wait := false, lockout := true, cb_state_open, state_change_open;
+  transition reclose
+    reclose_0 ((state = open AND auto_reclose_wait = true) AND lockout = false) -> state := closed, auto_reclose_wait := false, auto_reopen_wait := true, cb_state_closed, state_change_close;
+  transition close_unexplained
+    close_unexplained_0 state = open -> state := closed, cb_state_closed, state_change_close, count_as_fault;
+  transition close1
+    close1_0 state = open -> state := closed, cb_state_closed, state_change_close;
+  triggeredby close;
+  transition trip_unexplained
+    trip_unexplained_0 (state = closed AND ar_status = auto) -> state := open, auto_reclose_wait := true, cb_state_open, state_change_open, count_as_fault;
+  transition simple_trip1
+    simple_trip1_0 state = open -> state := open;
+    simple_trip1_1 (state = closed AND ar_status = non_auto) -> state := open, cb_state_open;
+    simple_trip1_2 (state = closed AND ar_status = auto) -> state := open, auto_reclose_wait := true, cb_state_open;
+  triggeredby simple_trip;
+  transition trip1
+    trip1_0 (state = closed AND ar_status = non_auto) -> state := open, cb_state_open, state_change_open;
+    trip1_1 (state = closed AND ar_status = auto) -> state := open, auto_reclose_wait := true, cb_state_open, state_change_open;
+  triggeredby trip;
+  transition open_unexplained
+    open_unexplained_0 state = closed -> state := open, cb_state_open, state_change_open, count_as_fault;
+  transition open1
+    open1_0 state = closed -> state := open, cb_state_open, state_change_open;
+  triggeredby open;
+}
+component Breaker_X5_X6 = {
+  var auto_reopen_wait : [0..1];
+  var auto_reclose_wait : [0..1];
+  var commanded_ar_non_auto : [0..1];
+  var commanded_ar_auto : [0..1];
+  var commanded_closed : [0..1];
+  var commanded_open : [0..1];
+  var lockout : [0..1];
+  var ar_status : {auto,non_auto};
+  var state : {open,closed};
+  event state_change_close;
+  event state_change_open;
+  event breaker_is_closed;
+  event count_as_fault;
+  event check_isolator_open;
+  event close;
+  event simple_trip;
+  event trip;
+  event open;
+  event IMPOSSIBLE;
+  event command_cb_ar_status_NON_AUTO;
+  event command_cb_ar_status_AUTO;
+  event command_ar_supy_control_status_NON_AUTO;
+  event command_ar_supy_control_status_AUTO;
+  event command_cb_state_closed;
+  event command_cb_state_open;
+  event cb_ar_status_NON_AUTO;
+  event cb_ar_status_AUTO;
+  event ar_supy_control_status_NON_AUTO;
+  event ar_supy_control_status_AUTO;
+  event cb_command_fail;
+  event cb_state_not_responding;
+  event cb_state_abnormal;
+  event cb_state_closed;
+  event cb_state_open;
+  transition breaker_is_closed_transition
+    breaker_is_closed_transition_0 state = closed -> breaker_is_closed;
+  transition check_isolator_open_transition
+    check_isolator_open_transition_0 true = 1 -> IMPOSSIBLE;
+    check_isolator_open_transition_1 state = open -> state := open;
+  triggeredby check_isolator_open;
+  transition auto_reopen_wait_timeout
+    auto_reopen_wait_timeout_0 true = 1 -> auto_reopen_wait := false;
+  triggeredby [0.0..1.0] auto_reopen_wait = true;
+  transition auto_reclose_wait_timeout
+    auto_reclose_wait_timeout_0 true = 1 -> auto_reclose_wait := false;
+  triggeredby [0.0..45.0] auto_reclose_wait = true;
+  transition commanded_ar_non_auto_timeout
+    commanded_ar_non_auto_timeout_0 true = 1 -> commanded_ar_non_auto := false;
+  triggeredby [0.0..45.0] commanded_ar_non_auto = true;
+  transition commanded_ar_auto_timeout
+    commanded_ar_auto_timeout_0 true = 1 -> commanded_ar_auto := false;
+  triggeredby [0.0..45.0] commanded_ar_auto = true;
+  transition commanded_closed_timeout
+    commanded_closed_timeout_0 true = 1 -> commanded_closed := false;
+  triggeredby [0.0..45.0] commanded_closed = true;
+  transition commanded_open_timeout
+    commanded_open_timeout_0 true = 1 -> commanded_open := false;
+  triggeredby [0.0..45.0] commanded_open = true;
+  transition not_responding
+    not_responding_0 true = 1 -> cb_state_not_responding, count_as_fault;
+  transition abnormal
+    abnormal_0 true = 1 -> cb_state_abnormal, count_as_fault;
+  transition ar_status_non_auto_unexplained
+    ar_status_non_auto_unexplained_0 true = 1 -> ar_status := non_auto, cb_ar_status_NON_AUTO, count_as_fault;
+    ar_status_non_auto_unexplained_1 true = 1 -> ar_status := non_auto, ar_supy_control_status_NON_AUTO, count_as_fault;
+  transition ar_status_auto_unexplained
+    ar_status_auto_unexplained_0 true = 1 -> ar_status := auto, cb_ar_status_AUTO, count_as_fault;
+    ar_status_auto_unexplained_1 true = 1 -> ar_status := auto, ar_supy_control_status_AUTO, count_as_fault;
+  transition ar_status_non_auto
+    ar_status_non_auto_0 commanded_ar_non_auto = true -> ar_status := non_auto, cb_ar_status_NON_AUTO;
+    ar_status_non_auto_1 commanded_ar_non_auto = true -> ar_status := non_auto, ar_supy_control_status_NON_AUTO;
+  transition ar_status_auto
+    ar_status_auto_0 commanded_ar_auto = true -> ar_status := auto, cb_ar_status_AUTO;
+    ar_status_auto_1 commanded_ar_auto = true -> ar_status := auto, ar_supy_control_status_AUTO;
+  transition command_ar_non_auto
+    command_ar_non_auto_0 true = 1 -> commanded_ar_non_auto := true, command_cb_ar_status_NON_AUTO;
+    command_ar_non_auto_1 true = 1 -> commanded_ar_non_auto := true, command_ar_supy_control_status_NON_AUTO;
+  transition command_ar_auto
+    command_ar_auto_0 true = 1 -> commanded_ar_auto := true, command_cb_ar_status_AUTO;
+    command_ar_auto_1 true = 1 -> commanded_ar_auto := true, command_ar_supy_control_status_AUTO;
+  transition command_close_fail
+    command_close_fail_0 commanded_closed = true -> cb_command_fail;
+  transition close_on_command
+    close_on_command_0 (state = open AND commanded_closed = true) -> state := closed, cb_state_closed, state_change_close;
+  transition command_close
+    command_close_0 true = 1 -> commanded_closed := true, command_cb_state_closed;
+  transition command_open_fail
+    command_open_fail_0 commanded_open = true -> cb_command_fail;
+  transition open_on_command
+    open_on_command_0 (state = closed AND commanded_open = true) -> state := open, cb_state_open, state_change_open;
+  transition command_open
+    command_open_0 true = 1 -> commanded_open := true, command_cb_state_open;
+  transition reopen
+    reopen_0 (state = closed AND auto_reopen_wait = true) -> state := open, auto_reopen_wait := false, lockout := true, cb_state_open, state_change_open;
+  transition reclose
+    reclose_0 ((state = open AND auto_reclose_wait = true) AND lockout = false) -> state := closed, auto_reclose_wait := false, auto_reopen_wait := true, cb_state_closed, state_change_close;
+  transition close_unexplained
+    close_unexplained_0 state = open -> state := closed, cb_state_closed, state_change_close, count_as_fault;
+  transition close1
+    close1_0 state = open -> state := closed, cb_state_closed, state_change_close;
+  triggeredby close;
+  transition trip_unexplained
+    trip_unexplained_0 (state = closed AND ar_status = auto) -> state := open, auto_reclose_wait := true, cb_state_open, state_change_open, count_as_fault;
+  transition simple_trip1
+    simple_trip1_0 state = open -> state := open;
+    simple_trip1_1 (state = closed AND ar_status = non_auto) -> state := open, cb_state_open;
+    simple_trip1_2 (state = closed AND ar_status = auto) -> state := open, auto_reclose_wait := true, cb_state_open;
+  triggeredby simple_trip;
+  transition trip1
+    trip1_0 (state = closed AND ar_status = non_auto) -> state := open, cb_state_open, state_change_open;
+    trip1_1 (state = closed AND ar_status = auto) -> state := open, auto_reclose_wait := true, cb_state_open, state_change_open;
+  triggeredby trip;
+  transition open_unexplained
+    open_unexplained_0 state = closed -> state := open, cb_state_open, state_change_open, count_as_fault;
+  transition open1
+    open1_0 state = closed -> state := open, cb_state_open, state_change_open;
+  triggeredby open;
+}
+component network = {
+  var reactor_switched_in_ff : [0..1];
+  var reactor_switched_out_ff : [0..1];
+  var capacitor_switched_in_ff : [0..1];
+  var capacitor_switched_out_ff : [0..1];
+  var reactor_switched_in : [0..1];
+  var reactor_switched_out : [0..1];
+  var capacitor_switched_in : [0..1];
+  var capacitor_switched_out : [0..1];
+  event check_switched_out;
+  event check_switched_in;
+  event reactor_isolator_close;
+  event reactor_isolator_open;
+  event capacitor_isolator_close;
+  event capacitor_isolator_open;
+  event IMPOSSIBLE;
+  transition check_switched_out_transition
+    check_switched_out_transition_0 NOT capacitor_switched_out = true -> IMPOSSIBLE;
+    check_switched_out_transition_1 capacitor_switched_out = true -> capacitor_switched_out := true;
+  triggeredby check_switched_out;
+  transition check_switched_in_transition
+    check_switched_in_transition_0 NOT capacitor_switched_in = true -> IMPOSSIBLE;
+    check_switched_in_transition_1 capacitor_switched_in = true -> capacitor_switched_in := true;
+  triggeredby check_switched_in;
+  transition reactor_switched_in_timeout
+    reactor_switched_in_timeout_0 true = 1 -> reactor_switched_in := false;
+  triggeredby [0.0..15.0] reactor_switched_in = true;
+  transition reactor_switched_out_timeout
+    reactor_switched_out_timeout_0 true = 1 -> reactor_switched_out := false;
+  triggeredby [0.0..15.0] reactor_switched_out = true;
+  transition capacitor_switched_in_timeout
+    capacitor_switched_in_timeout_0 true = 1 -> capacitor_switched_in := false;
+  triggeredby [0.0..15.0] capacitor_switched_in = true;
+  transition capacitor_switched_out_timeout
+    capacitor_switched_out_timeout_0 true = 1 -> capacitor_switched_out := false;
+  triggeredby [0.0..15.0] capacitor_switched_out = true;
+  transition reactor_switch_in
+    reactor_switch_in_0 reactor_switched_in_ff = false -> reactor_switched_in := true, reactor_switched_in_ff := true;
+    reactor_switch_in_1 reactor_switched_in_ff = true -> reactor_switched_in := true, reactor_switched_in_ff := false;
+  triggeredby reactor_isolator_close;
+  transition reactor_switch_out
+    reactor_switch_out_0 reactor_switched_out_ff = false -> reactor_switched_out := true, reactor_switched_out_ff := true;
+    reactor_switch_out_1 reactor_switched_out_ff = true -> reactor_switched_out := true, reactor_switched_out_ff := false;
+  triggeredby reactor_isolator_open;
+  transition capacitor_switch_in
+    capacitor_switch_in_0 capacitor_switched_in_ff = false -> capacitor_switched_in := true, capacitor_switched_in_ff := true;
+    capacitor_switch_in_1 capacitor_switched_in_ff = true -> capacitor_switched_in := true, capacitor_switched_in_ff := false;
+  triggeredby capacitor_isolator_close;
+  transition capacitor_switch_out
+    capacitor_switch_out_0 capacitor_switched_out_ff = false -> capacitor_switched_out := true, capacitor_switched_out_ff := true;
+    capacitor_switch_out_1 capacitor_switched_out_ff = true -> capacitor_switched_out := true, capacitor_switched_out_ff := false;
+  triggeredby capacitor_isolator_open;
+}
+synchronize Breaker_X1_X2.state_change_close,network.reactor_isolator_close;
+synchronize Breaker_X1_X2.state_change_open,network.reactor_isolator_open;
+Breaker_X5_X6.auto_reopen_wait := false;
+Breaker_X5_X6.auto_reclose_wait := false;
+Breaker_X5_X6.commanded_ar_non_auto := false;
+Breaker_X5_X6.commanded_ar_auto := false;
+Breaker_X5_X6.commanded_closed := false;
+Breaker_X5_X6.commanded_open := false;
+Breaker_X5_X6.lockout := false;
+Breaker_X3_X4.auto_reopen_wait := false;
+Breaker_X3_X4.auto_reclose_wait := false;
+Breaker_X3_X4.commanded_ar_non_auto := false;
+Breaker_X3_X4.commanded_ar_auto := false;
+Breaker_X3_X4.commanded_closed := false;
+Breaker_X3_X4.commanded_open := false;
+Breaker_X3_X4.lockout := false;
+Breaker_X1_X2.auto_reopen_wait := false;
+Breaker_X1_X2.auto_reclose_wait := false;
+Breaker_X1_X2.commanded_ar_non_auto := false;
+Breaker_X1_X2.commanded_ar_auto := false;
+Breaker_X1_X2.commanded_closed := false;
+Breaker_X1_X2.commanded_open := false;
+Breaker_X1_X2.lockout := false;
+network.reactor_switched_in_ff := false;
+network.reactor_switched_out_ff := false;
+network.capacitor_switched_in_ff := false;
+network.capacitor_switched_out_ff := false;
+network.reactor_switched_in := false;
+network.reactor_switched_out := false;
+network.capacitor_switched_in := false;
+network.capacitor_switched_out := false;
+observable Breaker_X1_X2.IMPOSSIBLE;
+observable Breaker_X1_X2.command_cb_ar_status_NON_AUTO;
+observable Breaker_X1_X2.command_cb_ar_status_AUTO;
+observable Breaker_X1_X2.command_ar_supy_control_status_NON_AUTO;
+observable Breaker_X1_X2.command_ar_supy_control_status_AUTO;
+observable Breaker_X1_X2.command_cb_state_closed;
+observable Breaker_X1_X2.command_cb_state_open;
+observable Breaker_X1_X2.cb_ar_status_NON_AUTO;
+observable Breaker_X1_X2.cb_ar_status_AUTO;
+observable Breaker_X1_X2.ar_supy_control_status_NON_AUTO;
+observable Breaker_X1_X2.ar_supy_control_status_AUTO;
+observable Breaker_X1_X2.cb_command_fail;
+observable Breaker_X1_X2.cb_state_not_responding;
+observable Breaker_X1_X2.cb_state_abnormal;
+observable Breaker_X1_X2.cb_state_closed;
+observable Breaker_X1_X2.cb_state_open;
+observable Breaker_X3_X4.IMPOSSIBLE;
+observable Breaker_X3_X4.command_cb_ar_status_NON_AUTO;
+observable Breaker_X3_X4.command_cb_ar_status_AUTO;
+observable Breaker_X3_X4.command_ar_supy_control_status_NON_AUTO;
+observable Breaker_X3_X4.command_ar_supy_control_status_AUTO;
+observable Breaker_X3_X4.command_cb_state_closed;
+observable Breaker_X3_X4.command_cb_state_open;
+observable Breaker_X3_X4.cb_ar_status_NON_AUTO;
+observable Breaker_X3_X4.cb_ar_status_AUTO;
+observable Breaker_X3_X4.ar_supy_control_status_NON_AUTO;
+observable Breaker_X3_X4.ar_supy_control_status_AUTO;
+observable Breaker_X3_X4.cb_command_fail;
+observable Breaker_X3_X4.cb_state_not_responding;
+observable Breaker_X3_X4.cb_state_abnormal;
+observable Breaker_X3_X4.cb_state_closed;
+observable Breaker_X3_X4.cb_state_open;
+observable Breaker_X5_X6.IMPOSSIBLE;
+observable Breaker_X5_X6.command_cb_ar_status_NON_AUTO;
+observable Breaker_X5_X6.command_cb_ar_status_AUTO;
+observable Breaker_X5_X6.command_ar_supy_control_status_NON_AUTO;
+observable Breaker_X5_X6.command_ar_supy_control_status_AUTO;
+observable Breaker_X5_X6.command_cb_state_closed;
+observable Breaker_X5_X6.command_cb_state_open;
+observable Breaker_X5_X6.cb_ar_status_NON_AUTO;
+observable Breaker_X5_X6.cb_ar_status_AUTO;
+observable Breaker_X5_X6.ar_supy_control_status_NON_AUTO;
+observable Breaker_X5_X6.ar_supy_control_status_AUTO;
+observable Breaker_X5_X6.cb_command_fail;
+observable Breaker_X5_X6.cb_state_not_responding;
+observable Breaker_X5_X6.cb_state_abnormal;
+observable Breaker_X5_X6.cb_state_closed;
+observable Breaker_X5_X6.cb_state_open;
+observable network.IMPOSSIBLE;

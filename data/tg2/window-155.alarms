@@ -1,0 +1,24 @@
+// from 2009-07-02 07:49:24 to + 1 minute: 5 observations (3 alarms)
+
+// at 2009-07-02 07:49:24
+time = 0.0
+Breaker_X5_X6.command_cb_state_closed
+time = 1.0
+
+// at 2009-07-02 07:49:29
+time = 5.0
+Breaker_X5_X6.cb_state_closed
+time = 6.0
+
+// at 2009-07-02 07:49:37
+time = 13.0
+Breaker_X3_X4.cb_ar_status_NON_AUTO
+time = 14.0
+
+// at 2009-07-02 07:50:22
+time = 58.0
+Generator_X13.unit_status_ON
+
+// at 2009-07-02 07:50:23
+time = 59.0
+Breaker_X1_X2.cb_state_closed

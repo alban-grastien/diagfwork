@@ -1,0 +1,19 @@
+// from 2009-07-02 10:47:53 to + 1 minute: 18 components
+Line_X14_X15.count_as_fault
+Breaker_X1_X2.count_as_fault
+Breaker_X3_X4.count_as_fault
+Line_X16_X17.count_as_fault
+Bus_X18.count_as_fault
+Generator_X11.count_as_fault
+Generator_X12.count_as_fault
+Generator_X13.count_as_fault
+Bus_X14.count_as_fault
+Bus_X16.count_as_fault
+Bus_X15.count_as_fault
+Bus_X17.count_as_fault
+Breaker_X5_X6.count_as_fault
+Breaker_X7_X8.count_as_fault
+Breaker_X9_X10.count_as_fault
+Bus_X6.count_as_fault
+Bus_X8.count_as_fault
+Bus_X10.count_as_fault

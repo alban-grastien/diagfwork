@@ -1,0 +1,39 @@
+// from 2009-07-02 08:06:18 to + 1 minute: 8 observations (2 alarms)
+
+// at 2009-07-02 08:06:18
+time = 0.0
+Breaker_X1_X2.command_cb_state_open
+time = 1.0
+
+// at 2009-07-02 08:06:20
+time = 2.0
+Breaker_X1_X2.cb_state_open
+time = 3.0
+
+// at 2009-07-02 08:06:57
+time = 39.0
+Breaker_X3_X4.command_ar_supy_control_status_NON_AUTO
+time = 40.0
+
+// at 2009-07-02 08:06:59
+time = 41.0
+Breaker_X3_X4.ar_supy_control_status_NON_AUTO
+time = 42.0
+
+// at 2009-07-02 08:07:09
+time = 51.0
+Breaker_X3_X4.command_cb_state_open
+time = 52.0
+
+// at 2009-07-02 08:07:11
+time = 53.0
+Breaker_X3_X4.cb_state_open
+time = 54.0
+
+// at 2009-07-02 08:07:13
+time = 55.0
+Line_X7_X8.limit_KV_Low_5
+
+// at 2009-07-02 08:07:14
+time = 56.0
+Line_X7_X8.entered_zero_zone_KV

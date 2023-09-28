@@ -1,0 +1,58 @@
+// from 2009-07-02 10:44:59 to + 1 minute: 15 observations (15 alarms)
+
+// at 2009-07-02 10:44:59
+time = 0.0
+Disconnector_X9_X10.sw_state_closed
+time = 1.0
+
+// at 2009-07-02 10:45:03
+time = 4.0
+Disconnector_X9_X10.sw_state_open
+
+// at 2009-07-02 10:45:04
+time = 5.0
+Disconnector_X9_X10.sw_state_closed
+time = 6.0
+
+// at 2009-07-02 10:45:06
+time = 7.0
+Disconnector_X9_X10.sw_state_open
+time = 8.0
+
+// at 2009-07-02 10:45:08
+time = 9.0
+Disconnector_X9_X10.sw_state_closed
+time = 10.0
+
+// at 2009-07-02 10:45:11
+time = 12.0
+Disconnector_X9_X10.sw_state_open
+time = 13.0
+
+// at 2009-07-02 10:45:13
+time = 14.0
+Disconnector_X9_X10.sw_state_closed
+time = 15.0
+
+// at 2009-07-02 10:45:16
+time = 17.0
+Disconnector_X9_X10.sw_state_open
+time = 18.0
+
+// at 2009-07-02 10:45:39
+time = 40.0
+Breaker_X3_X4.cb_state_open
+Breaker_X1_X2.cb_state_open
+Breaker_X5_X6.cb_state_open
+Breaker_X7_X8.cb_state_open
+time = 41.0
+
+// at 2009-07-02 10:45:54
+time = 55.0
+Breaker_X7_X8.cb_state_closed
+time = 56.0
+
+// at 2009-07-02 10:45:56
+time = 57.0
+Breaker_X3_X4.cb_state_closed
+Breaker_X1_X2.cb_state_closed
