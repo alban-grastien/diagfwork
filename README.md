@@ -88,6 +88,10 @@ The repository provides the following packages:
   `Makefile`, but this is not necessary as `lib/diag.jar` contains the
   compiled version of the code.
 
+# Data
+
+Folder `data` contains some benchmarks to test the algorithms.  These benchmarks use the `mmld-ground` modeling language presented in file `mmld-ground.pdf`.
+
 # Some references:
 
 * Kan John, Priscilla, and Alban Grastien. "Local Consistency and Junction Tree for Diagnosis of Discrete-Event Systems." ECAI. 2008.
